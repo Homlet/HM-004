@@ -22,6 +22,15 @@ Renderer::Renderer( GLFWwindow* window ) :
 
 
 /*!
+ * Renders one frame to the back buffer, blending entity meshes by given alpha.
+ */
+void Renderer::render( double alpha )
+{
+	// DO NOWT
+}
+
+
+/*!
  * Draw entities to the back buffer with interpolation.
  *
  * @param alpha amount to blend between last and current frame
@@ -57,7 +66,7 @@ void Renderer::addEntity( Entity* entity )
 {
 	entities->insert(
 		std::pair<int, LerpMesh*>(
-			entity->getID(),
+			1, //entity->getID(),
 			static_cast<LerpMesh*> ( entity->getMesh() )
 		)
 	);
@@ -71,7 +80,7 @@ void Renderer::addTerrain( Terrain* terrain )
 {
 	this->terrain->insert(
 		std::pair<int, Mesh*>(
-			terrain->getID(),
+			1, //terrain->getID(),
 			terrain->getMesh()
 		)
 	);
@@ -85,7 +94,7 @@ void Renderer::addGUI( GUIElement* gui )
 {
 	this->gui->insert(
 		std::pair<int, Mesh*>(
-			gui->getID(),
+			1, //gui->getID(),
 			gui->getMesh()
 		)
 	);

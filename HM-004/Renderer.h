@@ -18,6 +18,8 @@ private:
 public:
 	Renderer( GLFWwindow* window );
 
+	void render( double alpha );
+
 	void renderEntities( double alpha );
 	void renderTerrain( void );
 	void renderGUI( void );

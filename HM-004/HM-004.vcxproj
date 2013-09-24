@@ -136,11 +136,13 @@
     <ClInclude Include="MacroWindow.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="VAO.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="VAO.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

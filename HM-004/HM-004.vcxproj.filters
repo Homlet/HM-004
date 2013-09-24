@@ -63,6 +63,9 @@
     <ClInclude Include="GUIElement.h">
       <Filter>Header Files\State\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="VAO.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -72,6 +75,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="VAO.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
   </ItemGroup>

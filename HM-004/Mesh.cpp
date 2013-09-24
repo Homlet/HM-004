@@ -31,7 +31,31 @@ Mesh::Mesh( std::vector<vertex> vertices, std::vector<GLushort> indices, GLenum 
 			GL_STATIC_DRAW
 		);
 
-		glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 36, (GLvoid*) 0 );
+		std::size_t stride = sizeof ( GLfloat ) * 9;
+		glVertexAttribPointer(
+			0,
+			3,
+			GL_FLOAT,
+			GL_FALSE,
+			stride,
+			(GLvoid*) 0
+		);
+		glVertexAttribPointer(
+			1,
+			3,
+			GL_FLOAT,
+			GL_TRUE,
+			stride,
+			(GLvoid*) (int) ( sizeof ( GLfloat ) * 3 )
+		);
+		glVertexAttribPointer(
+			2,
+			3,
+			GL_FLOAT,
+			GL_TRUE,
+			stride,
+			(GLvoid*) (int) ( sizeof ( GLfloat ) * 6 )
+		);
 	}
 	vao->unbind();
 }
