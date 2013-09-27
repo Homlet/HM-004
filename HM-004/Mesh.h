@@ -16,6 +16,7 @@ private:
 	GLuint vertexID;
 	GLuint indexID;
 	GLenum poly_mode;
+	int count;
 
 	VAO* vao;
 
@@ -50,6 +51,11 @@ public:
 	virtual void translate( glm::vec3 offset );
 	virtual void addScale( glm::vec3 factor );
 	virtual void rotate( float amount );
+
+	static Mesh* createCube(
+		glm::vec3 position,
+		glm::vec3 size
+	);
 };
 
 

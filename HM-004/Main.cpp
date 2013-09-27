@@ -5,6 +5,8 @@
 #include "Main.h"
 
 #include "Renderer.h"
+#include "Mesh.h"
+#include "Shader.h"
 
 
 /*!
@@ -21,7 +23,9 @@ int main( void )
 
 	} catch( std::exception& e )
 	{
-		std::cout << e.what();
+		std::cerr << e.what();
+		char c;
+		std::cin >> c;
 
 		return EXIT_FAILURE;
 	}
@@ -35,16 +39,13 @@ int main( void )
  */
 Core::Core( void )
 {
+	// Initialise GLFW
 	if ( !glfwInit() )
 		throw std::exception( "GLFW failed to initialise." );
 	else
 		std::cout << "GLFW successfully initialised." << std::endl;
 
-	if ( !glewInit() )
-		throw std::exception( "GLEW failed to initalise." );
-	else
-		std::cout << "GLEW successfully initialised." << std::endl;
-
+	// Open window
 	glfwWindowHint( GLFW_RED_BITS,   WIN_RED_BITS   );
 	glfwWindowHint( GLFW_GREEN_BITS, WIN_GREEN_BITS );
 	glfwWindowHint( GLFW_BLUE_BITS,  WIN_BLUE_BITS  );
@@ -71,6 +72,17 @@ Core::Core( void )
 
 	glfwMakeContextCurrent( window );
 
+	// Initialise GLEW
+	glewExperimental = GL_TRUE;
+
+	if ( glewInit() != GLEW_OK )
+	{
+		glfwTerminate();
+		throw std::exception( "GLEW failed to initalise." );
+	} else
+		std::cout << "GLEW successfully initialised.\n" << std::endl;
+
+	// Initialise renderer
 	renderer = new Renderer( window );
 }
 
@@ -92,14 +104,14 @@ void Core::run( void )
 		glfwPollEvents();
 
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		
+
 		current_time = glfwGetTime();
 		accumulated_time += current_time - last_time;
 		last_time = current_time;
 
 		while ( accumulated_time >= dt )
 		{
-			accumulated_time -= TME_TICK;
+			accumulated_time -= dt;
 			t += dt;
 		}
 

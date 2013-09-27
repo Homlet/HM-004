@@ -9,6 +9,7 @@
  */
 Mesh::Mesh( std::vector<vertex> vertices, std::vector<GLushort> indices, GLenum poly_mode ) :
 	poly_mode( poly_mode ),
+	count( (int) indices.size() ),
 	vao( new VAO() )
 {
 	glGenBuffers( 1, &vertexID );
@@ -18,20 +19,27 @@ Mesh::Mesh( std::vector<vertex> vertices, std::vector<GLushort> indices, GLenum 
 	{
 		bind();
 
-		glBufferData(
-			GL_ARRAY_BUFFER,
-			sizeof ( vertex ) * vertices.size(),
-			&vertices[0],
-			GL_STATIC_DRAW
-		);
-		glBufferData(
-			GL_ELEMENT_ARRAY_BUFFER,
-			sizeof ( indices ) * indices.size(),
-			&indices[0],
-			GL_STATIC_DRAW
-		);
+		if ( count > 0 )
+		{
+			glBufferData(
+				GL_ARRAY_BUFFER,
+				sizeof ( vertex ) * vertices.size(),
+				&vertices[0],
+				GL_STATIC_DRAW
+			);
+			glBufferData(
+				GL_ELEMENT_ARRAY_BUFFER,
+				sizeof ( indices ) * indices.size(),
+				&indices[0],
+				GL_STATIC_DRAW
+			);
+		}
+		
+		glEnableVertexAttribArray( 0 );
+		glEnableVertexAttribArray( 1 );
+		glEnableVertexAttribArray( 2 );
 
-		std::size_t stride = sizeof ( GLfloat ) * 9;
+		GLsizei stride = sizeof ( GLfloat ) * 9;
 		glVertexAttribPointer(
 			0,
 			3,
@@ -86,8 +94,11 @@ void Mesh::unbind( void )
  */
 void Mesh::draw( void )
 {
-	bind();
-	unbind();
+	vao->bind();
+
+	glDrawElements( poly_mode, count, GL_UNSIGNED_SHORT, (GLvoid*) 0 );
+
+	vao->unbind();
 }
 
 
@@ -270,4 +281,38 @@ void LerpMesh::rotate( float amount )
 {
 	orientationOld = orientation;
 	orientation.w += amount;
+}
+
+
+/*!
+ * Returns a pointer to a cube with size and position specified.
+ */
+Mesh* Mesh::createCube( glm::vec3 position, glm::vec3 size )
+{
+	vertex v_a[8] = {
+		{ -0.5, -0.5, -0.5 },
+		{  0.5, -0.5, -0.5 },
+		{  0.5,  0.5, -0.5 },
+		{ -0.5,  0.5, -0.5 },
+		{ -0.5, -0.5,  0.5 },
+		{  0.5, -0.5,  0.5 },
+		{  0.5,  0.5,  0.5 },
+		{ -0.5,  0.5,  0.5 }
+	};
+	std::vector<vertex> v;
+	v.assign( v_a, v_a + 8 );
+
+	GLushort i_a[17] = {
+		0,1,2,3,7,4,5,1, 0xffff,
+		6,5,4,7,3,2,1,5
+	};
+	std::vector<GLushort> i;
+	i.assign( i_a, i_a + 17 );
+
+	Mesh* m = new Mesh( v, i, GL_TRIANGLE_FAN );
+
+	m->setPosition( position );
+	m->setScale( size );
+
+	return m;
 }

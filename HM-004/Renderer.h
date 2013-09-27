@@ -1,6 +1,9 @@
 #pragma once
 
 
+class Matrices;
+class Shader;
+
 class     Mesh;
 class LerpMesh;
 
@@ -15,22 +18,28 @@ private:
 	std::map<int,     Mesh*>* terrain;
 	std::map<int,     Mesh*>* gui;
 
+	Matrices* matrices;
+	Shader* shader;
+	Mesh* m;
+
+	void setupOGL( void );
+
 public:
 	Renderer( GLFWwindow* window );
 
 	void render( double alpha );
 
 	void renderEntities( double alpha );
-	void renderTerrain( void );
-	void renderGUI( void );
+	void  renderTerrain( void );
+	void      renderGUI( void );
 
-	void addEntity(  Entity* entity );
+	void  addEntity( Entity* entity   );
 	void addTerrain( Terrain* terrain );
-	void addGUI(     GUIElement* gui );
+	void     addGUI( GUIElement* gui  );
 
-	void removeEntity( int id );
+	void  removeEntity( int id );
 	void removeTerrain( int id );
-	void removeGUI( int id );
+	void     removeGUI( int id );
 
 	GLFWwindow* const window;
 };
