@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<program name="test_phong">
+  <vertex   url="shader/test_phong.vert" />
+  <fragment url="shader/test_phong.frag" />
+</program>

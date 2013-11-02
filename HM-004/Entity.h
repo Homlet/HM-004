@@ -1,13 +1,15 @@
 #pragma once
 
 
-#include "IRenderable.h"
+class LerpMesh;
 
 
-class Entity : public IRenderable {
+class Entity {
 private:
 public:
-	int getID();
+	Entity( void );
 
-	Mesh* getMesh( void );
+	int getID( void );
+
+	LerpMesh* getMesh( void );
 };

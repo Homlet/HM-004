@@ -28,6 +28,33 @@
     <Filter Include="Source Files\Render">
       <UniqueIdentifier>{3714676b-60ea-47cf-8d26-154681b502b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="pugixml">
+      <UniqueIdentifier>{93ddebea-8c51-495a-80aa-169e2ad8561a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shader">
+      <UniqueIdentifier>{1da7f7d6-056b-483a-8cfe-b868a845b6d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\texture">
+      <UniqueIdentifier>{8ba7b239-ba59-4dd5-82c4-d28f7ae31b51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\State">
+      <UniqueIdentifier>{e08de1f6-febd-40f5-95b9-5831bd26267f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\State\Terrain">
+      <UniqueIdentifier>{f8f84ac9-eab3-4187-950e-8c2cd03b6d2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\State\Terrain">
+      <UniqueIdentifier>{13fa9b1e-69aa-4bcd-9520-d17aa7cf1609}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\State\Entity">
+      <UniqueIdentifier>{684316e3-0887-4d2e-a87c-6cd33c25546f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\State\Entity">
+      <UniqueIdentifier>{2e746716-5037-4421-854e-be149b0d9717}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\State\GUI">
+      <UniqueIdentifier>{06b6509c-d37b-4a34-9f98-68d535847ba9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base.h">
@@ -42,19 +69,10 @@
     <ClInclude Include="MacroTime.h">
       <Filter>Header Files\Macros</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Header Files\State</Filter>
-    </ClInclude>
-    <ClInclude Include="Terrain.h">
-      <Filter>Header Files\State</Filter>
-    </ClInclude>
     <ClInclude Include="State.h">
       <Filter>Header Files\State</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="IRenderable.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
@@ -78,12 +96,27 @@
     <ClInclude Include="Matrices.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
+    <ClInclude Include="pugixml\pugiconfig.hpp">
+      <Filter>pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="pugixml\pugixml.hpp">
+      <Filter>pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Header Files\State\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header Files\State\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Chunk.h">
+      <Filter>Header Files\State\Terrain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
@@ -98,5 +131,91 @@
     <ClCompile Include="Matrices.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
+    <ClCompile Include="pugixml\pugixml.cpp">
+      <Filter>pugixml</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Source Files\State\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="Chunk.cpp">
+      <Filter>Source Files\State\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source Files\State\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIElement.cpp">
+      <Filter>Source Files\State\GUI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shader\basic.frag">
+      <Filter>Resource Files\shader</Filter>
+    </None>
+    <None Include="shader\basic.prog">
+      <Filter>Resource Files\shader</Filter>
+    </None>
+    <None Include="shader\basic.vert">
+      <Filter>Resource Files\shader</Filter>
+    </None>
+    <None Include="texture\block_dirt.xcf">
+      <Filter>Resource Files\texture</Filter>
+    </None>
+    <None Include="texture\block_grass_side.xcf">
+      <Filter>Resource Files\texture</Filter>
+    </None>
+    <None Include="texture\block_grass_top.tga">
+      <Filter>Resource Files\texture</Filter>
+    </None>
+    <None Include="texture\block_grass_top.xcf">
+      <Filter>Resource Files\texture</Filter>
+    </None>
+    <None Include="texture\block_rock.tga">
+      <Filter>Resource Files\texture</Filter>
+    </None>
+    <None Include="texture\block_rock.xcf">
+      <Filter>Resource Files\texture</Filter>
+    </None>
+    <None Include="texture\block_sand.tga">
+      <Filter>Resource Files\texture</Filter>
+    </None>
+    <None Include="texture\block_sand.xcf">
+      <Filter>Resource Files\texture</Filter>
+    </None>
+    <None Include="shader\textured.prog">
+      <Filter>Resource Files\shader</Filter>
+    </None>
+    <None Include="shader\textured.frag">
+      <Filter>Resource Files\shader</Filter>
+    </None>
+    <None Include="texture\block_dirt.tga">
+      <Filter>Resource Files\texture</Filter>
+    </None>
+    <None Include="texture\block_grass_side.tga">
+      <Filter>Resource Files\texture</Filter>
+    </None>
+    <None Include="shader\test_phong.prog">
+      <Filter>Resource Files\shader</Filter>
+    </None>
+    <None Include="texture\test_rgba.tga">
+      <Filter>Resource Files\texture</Filter>
+    </None>
+    <None Include="texture\test_rgb.tga">
+      <Filter>Resource Files\texture</Filter>
+    </None>
+    <None Include="texture\test.xcf">
+      <Filter>Resource Files\texture</Filter>
+    </None>
+    <None Include="shader\test_phong.frag">
+      <Filter>Resource Files\shader</Filter>
+    </None>
+    <None Include="shader\test_phong.vert">
+      <Filter>Resource Files\shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,13 +1,23 @@
 #pragma once
 
 
-#include "IRenderable.h"
+class Chunk;
 
 
-class Terrain : public IRenderable {
-private:
+class ivec3_compare {
 public:
-	int getID();
+	bool operator()(glm::ivec3 const& l, glm::ivec3 const& r )
+	{
+		return l.x  < r.x ||
+			l.x == r.x && l.y  < r.y ||
+			l.x == r.x && l.y == r.y && l.z < r.z;
+	};
+};
 
-	Mesh* getMesh( void );
+
+class Terrain {
+public:
+	Terrain( void );
+
+	std::map<glm::ivec3, Chunk*, ivec3_compare>* chunks;
 };

@@ -6,7 +6,6 @@ private:
 	glm::mat4 model;
 	glm::mat4 view;
 	glm::mat4 projection;
-	glm::mat4 modelView;
 
 public:
 	Matrices( void );
@@ -28,7 +27,8 @@ public:
 		double far
 	);
 
-	void computeModelView( void );
+	glm::mat4 getModel( void ) const;
 	glm::mat4 getModelView( void ) const;
 	glm::mat4 getProjection( void ) const;
+	glm::mat3 getNormal( void ) const;
 };

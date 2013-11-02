@@ -6,8 +6,8 @@ class VAO;
 
 struct vertex {
 	GLfloat x,  y,  z,
-		   nx, ny, nz,
-			s,  t , p;
+			s,  t , p,
+		   nx, ny, nz;
 };
 
 
@@ -21,7 +21,7 @@ private:
 	VAO* vao;
 
 	std::vector<vertex>   vertices;
-	std::vector<GLushort> indices;
+	std::vector<GLuint> indices;
 	
 protected:
 	glm::vec3 position;
@@ -31,7 +31,7 @@ protected:
 public:
 	Mesh(
 		std::vector<vertex> vertices,
-		std::vector<GLushort> indices,
+		std::vector<GLuint> indices,
 		GLenum poly_mode
 	);
 
@@ -56,6 +56,21 @@ public:
 		glm::vec3 position,
 		glm::vec3 size
 	);
+
+	static void appendCube(
+		glm::vec3 position,
+		float size,
+		std::vector<vertex>*   v,
+		std::vector<GLuint>* i
+	);
+
+	static Mesh* createTorus(
+		glm::vec3 position,
+		glm::vec3 size,
+		float inner_radius,
+		float outer_radius,
+		int resolution
+	);
 };
 
 
@@ -68,7 +83,7 @@ private:
 public:
 	LerpMesh(
 		std::vector<vertex> vertices,
-		std::vector<GLushort> indices,
+		std::vector<GLuint> indices,
 		GLenum poly_mode
 	);
 

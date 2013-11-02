@@ -8,6 +8,8 @@
 #include "Mesh.h"
 #include "Shader.h"
 
+#include "Terrain.h"
+
 
 /*!
  * Starting point for the process. Calls setup and main loop.
@@ -18,8 +20,7 @@ int main( void )
 {
 	try
 	{
-		Core* core = new Core();
-		core->run();
+		Core::run();
 
 	} catch( std::exception& e )
 	{
@@ -39,13 +40,13 @@ int main( void )
  */
 Core::Core( void )
 {
-	// Initialise GLFW
+	// Initialise GLFW.
 	if ( !glfwInit() )
 		throw std::exception( "GLFW failed to initialise." );
 	else
 		std::cout << "GLFW successfully initialised." << std::endl;
 
-	// Open window
+	// Open window.
 	glfwWindowHint( GLFW_RED_BITS,   WIN_RED_BITS   );
 	glfwWindowHint( GLFW_GREEN_BITS, WIN_GREEN_BITS );
 	glfwWindowHint( GLFW_BLUE_BITS,  WIN_BLUE_BITS  );
@@ -72,7 +73,7 @@ Core::Core( void )
 
 	glfwMakeContextCurrent( window );
 
-	// Initialise GLEW
+	// Initialise GLEW.
 	glewExperimental = GL_TRUE;
 
 	if ( glewInit() != GLEW_OK )
@@ -82,8 +83,31 @@ Core::Core( void )
 	} else
 		std::cout << "GLEW successfully initialised.\n" << std::endl;
 
-	// Initialise renderer
+	// Initialise renderer.
 	renderer = new Renderer( window );
+
+	// Dummy terrain.
+	Terrain* terrain = new Terrain();
+	renderer->addTerrain( (*terrain->chunks)[glm::ivec3( 0, 0, 0 )] );
+}
+
+
+bool Core::exists = false;
+Core* Core::instance;
+
+
+/*!
+ * Returns a pointer to the core instance. Creates one if it does not exist.
+ */
+Core* Core::getInstance( void )
+{
+	if ( !exists )
+	{
+		instance = new Core();
+		exists = true;
+	}
+
+	return instance;
 }
 
 
@@ -92,6 +116,8 @@ Core::Core( void )
  */
 void Core::run( void )
 {
+	Core* core = getInstance();
+
 	      double  t = 0.0;
 	const double dt = TME_TICK;
 
@@ -99,7 +125,7 @@ void Core::run( void )
 	double last_time        = 0.0;
 	double accumulated_time = 0.0;
 
-	while( !glfwWindowShouldClose( window ) )
+	while( !glfwWindowShouldClose( core->window ) )
 	{
 		glfwPollEvents();
 
@@ -117,12 +143,12 @@ void Core::run( void )
 
 		double alpha = accumulated_time / dt;
 		
-		renderer->render( alpha );
+		core->renderer->render( alpha );
 
-		glfwSwapBuffers( window );
+		glfwSwapBuffers( core->window );
 	}
 
-	glfwDestroyWindow( window );
+	glfwDestroyWindow( core->window );
 	glfwTerminate();
 }
 
@@ -132,7 +158,9 @@ void Core::run( void )
  */
 Renderer* Core::getRenderer( void )
 {
-	return renderer;
+	Core* core = getInstance();
+
+	return core->renderer;
 }
 
 
@@ -166,4 +194,25 @@ bool readTextFile( std::string url, std::string& output )
 
 		return false;
 	}
+}
+
+
+/*!
+ * Outputs the filename part of a given url.
+ *
+ * @return Returns true if a filename could be found in the string.
+ */
+bool getFilename( std::string url, std::string& output )
+{
+	output = url;
+
+	const size_t last_slash_index = output.find_last_of( "\\/" );
+	if ( last_slash_index != std::string::npos )
+		output.erase( 0, last_slash_index + 1 );
+
+	const size_t extension_index = output.rfind( '.' );
+	if ( extension_index != std::string::npos )
+		output.erase( extension_index );
+
+	return true;
 }

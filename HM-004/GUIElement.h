@@ -1,13 +1,15 @@
 #pragma once
 
 
-#include "IRenderable.h"
+class Mesh;
 
 
-class GUIElement : public IRenderable {
+class GUIElement {
 private:
 public:
-	int getID();
+	GUIElement( void );
+
+	int getID( void );
 
 	Mesh* getMesh( void );
 };

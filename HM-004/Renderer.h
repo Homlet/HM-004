@@ -1,14 +1,18 @@
 #pragma once
 
 
+template <typename T>
+class ResourceCache;
+
 class Matrices;
 class Shader;
+class Texture;
 
 class     Mesh;
 class LerpMesh;
 
 class Entity;
-class Terrain;
+class Chunk;
 class GUIElement;
 
 
@@ -18,9 +22,11 @@ private:
 	std::map<int,     Mesh*>* terrain;
 	std::map<int,     Mesh*>* gui;
 
+	ResourceCache<Shader>*   shaderCache;
+	ResourceCache<Texture>* textureCache;
+
 	Matrices* matrices;
 	Shader* shader;
-	Mesh* m;
 
 	void setupOGL( void );
 
@@ -34,12 +40,14 @@ public:
 	void      renderGUI( void );
 
 	void  addEntity( Entity* entity   );
-	void addTerrain( Terrain* terrain );
+	void addTerrain( Chunk* chunk     );
 	void     addGUI( GUIElement* gui  );
 
 	void  removeEntity( int id );
 	void removeTerrain( int id );
 	void     removeGUI( int id );
+
+	Shader* getShader( std::string url );
 
 	GLFWwindow* const window;
 };

@@ -7,7 +7,6 @@
 #define DEBUG_MODE
 
 
-#include <iostream>
 #include <fstream>
 #include <cstdlib>
 #include <string>
@@ -27,17 +26,21 @@ class Renderer;
 
 
 bool readTextFile( std::string url, std::string& output );
+bool  getFilename( std::string url, std::string& output );
 
 
 class Core {
 private:
+	Core( void );
+	
+	static bool exists;
+	static Core* instance;
+	static Core* getInstance( void );
+
 	GLFWwindow* window;
 	Renderer* renderer;
 
 public:
-	Core( void );
-
-	void run( void );
-
-	Renderer* getRenderer( void );
+	static void run( void );
+	static Renderer* getRenderer( void );
 };

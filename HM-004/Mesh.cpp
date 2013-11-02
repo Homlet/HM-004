@@ -7,10 +7,11 @@
 /*!
  * Creates a vbo and an ibo and buffers given data to them.
  */
-Mesh::Mesh( std::vector<vertex> vertices, std::vector<GLushort> indices, GLenum poly_mode ) :
+Mesh::Mesh( std::vector<vertex> vertices, std::vector<GLuint> indices, GLenum poly_mode ) :
 	poly_mode( poly_mode ),
 	count( (int) indices.size() ),
-	vao( new VAO() )
+	vao( new VAO() ),
+	scale( 1.0, 1.0, 1.0 )
 {
 	glGenBuffers( 1, &vertexID );
 	glGenBuffers( 1, &indexID );
@@ -29,7 +30,7 @@ Mesh::Mesh( std::vector<vertex> vertices, std::vector<GLushort> indices, GLenum 
 			);
 			glBufferData(
 				GL_ELEMENT_ARRAY_BUFFER,
-				sizeof ( indices ) * indices.size(),
+				sizeof ( GLuint ) * indices.size(),
 				&indices[0],
 				GL_STATIC_DRAW
 			);
@@ -39,7 +40,7 @@ Mesh::Mesh( std::vector<vertex> vertices, std::vector<GLushort> indices, GLenum 
 		glEnableVertexAttribArray( 1 );
 		glEnableVertexAttribArray( 2 );
 
-		GLsizei stride = sizeof ( GLfloat ) * 9;
+		GLsizei stride = sizeof ( vertex );
 		glVertexAttribPointer(
 			0,
 			3,
@@ -96,7 +97,7 @@ void Mesh::draw( void )
 {
 	vao->bind();
 
-	glDrawElements( poly_mode, count, GL_UNSIGNED_SHORT, (GLvoid*) 0 );
+	glDrawElements( poly_mode, count, GL_UNSIGNED_INT, (GLvoid*) 0 );
 
 	vao->unbind();
 }
@@ -186,7 +187,7 @@ void Mesh::rotate( float amount )
 /*!
  * Instantiate a mesh from the given arguments.
  */
-LerpMesh::LerpMesh( std::vector<vertex> vertices, std::vector<GLushort> indices, GLenum poly_mode ) :
+LerpMesh::LerpMesh( std::vector<vertex> vertices, std::vector<GLuint> indices, GLenum poly_mode ) :
 	Mesh( vertices, indices, poly_mode )
 {
 }
@@ -285,31 +286,188 @@ void LerpMesh::rotate( float amount )
 
 
 /*!
- * Returns a pointer to a cube with size and position specified.
+ * Returns a pointer to a cube mesh with size and position specified.
  */
 Mesh* Mesh::createCube( glm::vec3 position, glm::vec3 size )
 {
-	vertex v_a[8] = {
-		{ -0.5, -0.5, -0.5 },
-		{  0.5, -0.5, -0.5 },
-		{  0.5,  0.5, -0.5 },
-		{ -0.5,  0.5, -0.5 },
-		{ -0.5, -0.5,  0.5 },
-		{  0.5, -0.5,  0.5 },
-		{  0.5,  0.5,  0.5 },
-		{ -0.5,  0.5,  0.5 }
+	vertex v_a[24] = {
+		// Front
+		{ -0.5, -0.5,  0.5,  0.0, 0.0, 0.0,   0.0,  0.0,  1.0 },
+		{  0.5, -0.5,  0.5,  1.0, 0.0, 0.0,   0.0,  0.0,  1.0 },
+		{  0.5,  0.5,  0.5,  1.0, 1.0, 0.0,   0.0,  0.0,  1.0 },
+		{ -0.5,  0.5,  0.5,  0.0, 1.0, 0.0,   0.0,  0.0,  1.0 },
+		// Back
+		{  0.5, -0.5, -0.5,  0.0, 0.0, 0.0,   0.0,  0.0, -1.0 },
+		{ -0.5, -0.5, -0.5,  1.0, 0.0, 0.0,   0.0,  0.0, -1.0 },
+		{ -0.5,  0.5, -0.5,  1.0, 1.0, 0.0,   0.0,  0.0, -1.0 },
+		{  0.5,  0.5, -0.5,  0.0, 1.0, 0.0,   0.0,  0.0, -1.0 },
+		// Right
+		{  0.5, -0.5,  0.5,  0.0, 0.0, 0.0,   1.0,  0.0,  0.0 },
+		{  0.5, -0.5, -0.5,  1.0, 0.0, 0.0,   1.0,  0.0,  0.0 },
+		{  0.5,  0.5, -0.5,  1.0, 1.0, 0.0,   1.0,  0.0,  0.0 },
+		{  0.5,  0.5,  0.5,  0.0, 1.0, 0.0,   1.0,  0.0,  0.0 },
+		// Left
+		{ -0.5, -0.5, -0.5,  0.0, 0.0, 0.0,  -1.0,  0.0,  0.0 },
+		{ -0.5, -0.5,  0.5,  1.0, 0.0, 0.0,  -1.0,  0.0,  0.0 },
+		{ -0.5,  0.5,  0.5,  1.0, 1.0, 0.0,  -1.0,  0.0,  0.0 },
+		{ -0.5,  0.5, -0.5,  0.0, 1.0, 0.0,  -1.0,  0.0,  0.0 },
+		// Top
+		{ -0.5,  0.5,  0.5,  0.0, 0.0, 0.0,   0.0,  1.0,  0.0 },
+		{  0.5,  0.5,  0.5,  1.0, 0.0, 0.0,   0.0,  1.0,  0.0 },
+		{  0.5,  0.5, -0.5,  1.0, 1.0, 0.0,   0.0,  1.0,  0.0 },
+		{ -0.5,  0.5, -0.5,  0.0, 1.0, 0.0,   0.0,  1.0,  0.0 },
+		// Bottom
+		{ -0.5, -0.5, -0.5,  0.0, 0.0, 0.0,   0.0, -1.0,  0.0 },
+		{  0.5, -0.5, -0.5,  1.0, 0.0, 0.0,   0.0, -1.0,  0.0 },
+		{  0.5, -0.5,  0.5,  1.0, 1.0, 0.0,   0.0, -1.0,  0.0 },
+		{ -0.5, -0.5,  0.5,  0.0, 1.0, 0.0,   0.0, -1.0,  0.0 }
 	};
 	std::vector<vertex> v;
-	v.assign( v_a, v_a + 8 );
+	v.assign( v_a, v_a + 24 );
 
-	GLushort i_a[17] = {
-		0,1,2,3,7,4,5,1, 0xffff,
-		6,5,4,7,3,2,1,5
+	GLuint i_a[29] = {
+		 0,  1,  2,  3,  0xffffffff,
+		 4,  5,  6,  7,  0xffffffff,
+		 8,  9, 10, 11,  0xffffffff,
+		12, 13, 14, 15,  0xffffffff,
+		16, 17, 18, 19,  0xffffffff,
+		20, 21, 22, 23
 	};
-	std::vector<GLushort> i;
-	i.assign( i_a, i_a + 17 );
+	std::vector<GLuint> i;
+	i.assign( i_a, i_a + 29 );
 
 	Mesh* m = new Mesh( v, i, GL_TRIANGLE_FAN );
+
+	m->setPosition( position );
+	m->setScale( size );
+
+	return m;
+}
+
+
+/*!
+ * Appends the vertices and indices of a cube to a pair of vectors.
+ */
+void Mesh::appendCube( glm::vec3 position, float size, std::vector<vertex>* v, std::vector<GLuint>* i )
+{
+	vertex v_a[24] = {
+		// Front
+		{        position.x,        position.y, size + position.z,  0.0, 0.0, 0.0,   0.0,  0.0,  1.0 },
+		{ size + position.x,        position.y, size + position.z,  1.0, 0.0, 0.0,   0.0,  0.0,  1.0 },
+		{ size + position.x, size + position.y, size + position.z,  1.0, 1.0, 0.0,   0.0,  0.0,  1.0 },
+		{        position.x, size + position.y, size + position.z,  0.0, 1.0, 0.0,   0.0,  0.0,  1.0 },
+		// Back
+		{ size + position.x,        position.y,        position.z,  0.0, 0.0, 0.0,   0.0,  0.0, -1.0 },
+		{        position.x,        position.y,        position.z,  1.0, 0.0, 0.0,   0.0,  0.0, -1.0 },
+		{        position.x, size + position.y,        position.z,  1.0, 1.0, 0.0,   0.0,  0.0, -1.0 },
+		{ size + position.x, size + position.y,        position.z,  0.0, 1.0, 0.0,   0.0,  0.0, -1.0 },
+		// Right
+		{ size + position.x,        position.y, size + position.z,  0.0, 0.0, 0.0,   1.0,  0.0,  0.0 },
+		{ size + position.x,        position.y,        position.z,  1.0, 0.0, 0.0,   1.0,  0.0,  0.0 },
+		{ size + position.x, size + position.y,        position.z,  1.0, 1.0, 0.0,   1.0,  0.0,  0.0 },
+		{ size + position.x, size + position.y, size + position.z,  0.0, 1.0, 0.0,   1.0,  0.0,  0.0 },
+		// Left
+		{        position.x,        position.y,        position.z,  0.0, 0.0, 0.0,  -1.0,  0.0,  0.0 },
+		{        position.x,        position.y, size + position.z,  1.0, 0.0, 0.0,  -1.0,  0.0,  0.0 },
+		{        position.x, size + position.y, size + position.z,  1.0, 1.0, 0.0,  -1.0,  0.0,  0.0 },
+		{        position.x, size + position.y,        position.z,  0.0, 1.0, 0.0,  -1.0,  0.0,  0.0 },
+		// Top
+		{        position.x, size + position.y, size + position.z,  0.0, 0.0, 0.0,   0.0,  1.0,  0.0 },
+		{ size + position.x, size + position.y, size + position.z,  1.0, 0.0, 0.0,   0.0,  1.0,  0.0 },
+		{ size + position.x, size + position.y,        position.z,  1.0, 1.0, 0.0,   0.0,  1.0,  0.0 },
+		{        position.x, size + position.y,        position.z,  0.0, 1.0, 0.0,   0.0,  1.0,  0.0 },
+		// Bottom
+		{        position.x,        position.y,        position.z,  0.0, 0.0, 0.0,   0.0, -1.0,  0.0 },
+		{ size + position.x,        position.y,        position.z,  1.0, 0.0, 0.0,   0.0, -1.0,  0.0 },
+		{ size + position.x,        position.y, size + position.z,  1.0, 1.0, 0.0,   0.0, -1.0,  0.0 },
+		{        position.x,        position.y, size + position.z,  0.0, 1.0, 0.0,   0.0, -1.0,  0.0 }
+	};
+
+	GLuint offset = (GLuint) v->size();
+	GLuint i_a[30] = {
+		offset +  0, offset +  1, offset +  2, offset +  3,  0xffffffff,
+		offset +  4, offset +  5, offset +  6, offset +  7,  0xffffffff,
+		offset +  8, offset +  9, offset + 10, offset + 11,  0xffffffff,
+		offset + 12, offset + 13, offset + 14, offset + 15,  0xffffffff,
+		offset + 16, offset + 17, offset + 18, offset + 19,  0xffffffff,
+		offset + 20, offset + 21, offset + 22, offset + 23,  0xffffffff
+	};
+	
+	v->insert( v->end(), v_a, v_a + 24 );
+	i->insert( i->end(), i_a, i_a + 30 );
+}
+
+
+/*!
+ * Returns a pointer to a torus mesh with given dimensions.
+ */
+Mesh* Mesh::createTorus(
+	glm::vec3 position,
+	glm::vec3 size,
+	float radius,
+	float tube_radius,
+	int resolution
+)
+{
+	float two_pi = 2 * glm::pi<float>();
+	
+	// Vertices.
+	std::vector<vertex> vertices;
+	for ( int i = resolution; i >= 0; i-- )
+	{
+		float u = i * ( two_pi / resolution );
+
+		for ( int j = 0; j <= resolution; j++ )
+		{
+			float v = j * ( two_pi / resolution );
+
+			glm::vec3 p(
+				radius * glm::cos( u ) + tube_radius * glm::cos( v ) * glm::cos( u ),
+				radius * glm::sin( u ) + tube_radius * glm::cos( v ) * glm::sin( u ),
+				tube_radius * glm::sin( v )
+			);
+
+			glm::vec3 t(
+				u / two_pi,
+				v / two_pi,
+				0.0
+			);
+
+			glm::vec3 n(
+				glm::cos( u ) * glm::cos( v ),
+				glm::sin( u ) * glm::cos( v ),
+				glm::sin( v )
+			);
+
+			vertex q = {
+				p.x, p.y, p.z,
+				t.x, t.y, t.z,
+				n.x, n.y, n.z
+			};
+			vertices.push_back( q );
+		}
+	}
+	
+	// Quad indices.
+	std::vector<GLuint> indices;
+	int index = 0;
+	for ( int i = 0; i <= resolution; i++ )
+		for ( int j = 0; j < resolution; j++ )
+		{
+			GLuint quad[8] = {
+				index,
+				index + 1,
+				index + resolution + 1,  0xffffffff,
+				index + resolution + 1,
+				index + 1,
+				index + resolution + 2,  0xffffffff
+			};
+			indices.insert( indices.end(), quad, quad + 8 );
+
+			index++;
+		}
+
+	Mesh* m = new Mesh( vertices, indices, GL_TRIANGLES );
 
 	m->setPosition( position );
 	m->setScale( size );

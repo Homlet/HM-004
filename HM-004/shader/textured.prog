@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<program name="textured">
+  <vertex   url="shader/basic.vert" />
+  <fragment url="shader/textured.frag" />
+</program>

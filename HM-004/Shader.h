@@ -4,7 +4,7 @@
 #define GLSL(src) "#version 400\n" #src
 
 
-//#include "rapidxml.hpp"
+#include "pugixml/pugixml.hpp"
 
 
 template <typename T>
@@ -19,7 +19,8 @@ private:
 	bool compiled;
 
 	GLint uniformLoc_MV,
-		  uniformLoc_P;
+		  uniformLoc_P,
+		  uniformLoc_N;
 
 	GLuint compileShader( std::string src, GLenum type );
 
@@ -28,9 +29,10 @@ public:
 
 	       void   bind( void );
 	static void unbind( void );
-
+	
 	void  sendModelView( glm::mat4 mv );
 	void sendProjection( glm::mat4 p );
+	void     sendNormal( glm::mat3 n );
 
 	bool isCompiled( void );
 };

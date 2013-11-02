@@ -5,8 +5,7 @@
 Matrices::Matrices() :
 	     model( 1.0 ),
 	      view( 1.0 ),
-	projection( 1.0 ),
-	 modelView( 1.0 )
+	projection( 1.0 )
 {
 }
 
@@ -47,19 +46,25 @@ void Matrices::setProjection( double fov, double ratio, double near, double far 
 }
 
 
-void Matrices::computeModelView( void )
+glm::mat4 Matrices::getModel( void ) const
 {
-	modelView = view * model;
+	return model;
 }
 
 
 glm::mat4 Matrices::getModelView( void ) const
 {
-	return modelView;
+	return view * model;
 }
 
 
 glm::mat4 Matrices::getProjection( void ) const
 {
 	return projection;
+}
+
+
+glm::mat3 Matrices::getNormal( void ) const
+{
+	return glm::transpose( glm::inverse( glm::mat3( model ) ) );
 }

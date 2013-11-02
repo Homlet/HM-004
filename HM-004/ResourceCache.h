@@ -43,14 +43,16 @@ inline T* ResourceCache<T>::getResource( std::string url )
 	if ( itr == cache.end() )
 	{
 		// If resource is not in the cache already, load and insert it.
-		std::cout << "Loading resource: \"" + url "\"" << std::endl;
+		std::cout << "Loading resource: \"" + url + "\"" << std::endl;
 
 		T* t_ptr = loader->load( url );
 		cache[url] = t_ptr;
 
+		std::cout << std::endl;
+
 		return t_ptr;
 	} else
 	{
-		return itr->second();
+		return itr->second;
 	}
 }

@@ -4,11 +4,15 @@
 #include "Base.h"
 #include "Renderer.h"
 
+#include "ResourceCache.h"
+
 #include "Matrices.h"
 #include "Shader.h"
+#include "Texture.h"
 #include "Mesh.h"
+
 #include "Entity.h"
-#include "Terrain.h"
+#include "Chunk.h"
 #include "GUIElement.h"
 
 
@@ -18,12 +22,10 @@
 void Renderer::setupOGL( void )
 {
 	glEnable( GL_PRIMITIVE_RESTART );
-	glPrimitiveRestartIndex( 0xffff );
+	glPrimitiveRestartIndex( 0xffffffff );
 
 	glEnable( GL_DEPTH_TEST );
 	glDepthFunc( GL_LEQUAL );
-
-	glFrontFace( GL_CW );
 
 	glEnable( GL_CULL_FACE );
 	glCullFace( GL_BACK );
@@ -40,55 +42,35 @@ void Renderer::setupOGL( void )
  */
 Renderer::Renderer( GLFWwindow* window ) :
 	window( window ),
-	matrices( new Matrices )
+	entities( new std::map<int, LerpMesh*>() ),
+	 terrain( new std::map<int,     Mesh*>() ),
+	     gui( new std::map<int,     Mesh*>() ),
+	 shaderCache( new ResourceCache<Shader>()  ),
+	textureCache( new ResourceCache<Texture>() ),
+	matrices( new Matrices() )
 {
 	// Setup matrices.
 	matrices->setProjection(
 		90,
 		(float) WIN_W / WIN_H,
-		1,
-		100
+		0.1,
+		1000
 	);
 	matrices->lookAt(
 		glm::vec3( 0.0, 0.0, -1.0 ),
 		glm::vec3( 0.0 ),
 		glm::vec3( 0.0, 1.0, 0.0 )
 	);
-
-	// Dummy mesh.
-	m = Mesh::createCube( glm::vec3(), glm::vec3( 0.5, 2.0, 1.0 ) );
 	
 	// Dummy shader.
-	std::string vert_src = GLSL(
-		layout(location = 0) in vec3 i_pos;
-		layout(location = 1) in vec3 i_normal;
-		layout(location = 2) in vec3 i_tex;
+	shader = shaderCache->getResource( "shader/test_phong.prog" );
 
-		out vec3 f_pos;
+	// Dummy texture.
+	textureCache->getResource( "texture/block_grass_top.tga" )->bind();
 
-		uniform mat4 u_MV;
-		uniform mat4 u_P;
-
-		void main( void )
-		{
-			f_pos = i_pos;
-
-			gl_Position = u_P * u_MV * vec4( i_pos, 1.0 );
-		}
-	);
-
-	std::string frag_src = GLSL(
-		out vec4 o_color;
-
-		in vec3 f_pos;
-
-		void main( void )
-		{
-			o_color = vec4( f_pos + 0.5, 1.0 );
-		}
-	);
-
-	shader = new Shader( "Basic", vert_src, frag_src );
+	shader->bind();
+	shader->sendProjection( matrices->getProjection() );
+	Shader::unbind();
 
 	setupOGL();
 }
@@ -99,44 +81,35 @@ Renderer::Renderer( GLFWwindow* window ) :
  */
 void Renderer::render( double alpha )
 {
+	double mx, my;
+	glfwGetCursorPos( Core::getRenderer()->window, &mx, &my );
+
+	my = glm::clamp<double>( WIN_H - my, 0.1, WIN_H );
+
 	matrices->lookAt(
 		glm::vec3(
-			glm::sin( alpha * glm::pi<float>() * 2 ) * 2.0,
-			1.5,
-			glm::cos( alpha * glm::pi<float>() * 2 ) * 2.0
+			glm::cos( mx / 200 ) * 46.0 * glm::sin( my / 200 ),
+			glm::cos( my / 200 ) * 46.0,
+			glm::sin( mx / 200 ) * 46.0 * glm::sin( my / 200 )
 		),
 		glm::vec3( 0.0 ),
 		glm::vec3( 0.0, 1.0, 0.0 )
 	);
 
-	shader->bind();
-	shader->sendProjection( matrices->getProjection() );
-
-	// Reset the model matrix.
-	matrices->loadIdentity();
-
-	// Perform mesh-wise matrix transformations.
-	matrices->translate( m->getPosition() );
-	matrices->scale( m->getScale() );
-
-	// Send the modelview matrix to GPU.
-	matrices->computeModelView();
-	shader->sendModelView( matrices->getModelView() );
-
-	m->draw();
-
-	Shader::unbind();
+	renderEntities( alpha );
+	renderTerrain();
+	renderGUI();
 }
 
 
 /*!
  * Draw entities to the back buffer with interpolation.
  *
- * @param alpha amount to blend between last and current frame
+ * @param alpha amount to blend between last and current frame.
  */
 void Renderer::renderEntities( double alpha )
 {
-
+	// TODO.
 }
 
 
@@ -145,7 +118,27 @@ void Renderer::renderEntities( double alpha )
  */
 void Renderer::renderTerrain( void )
 {
+	shader->bind();
 
+	for ( auto itr = terrain->begin(); itr != terrain->end(); itr++ )
+	{
+		Mesh* m = itr->second;
+
+		// Reset the model matrix.
+		matrices->loadIdentity();
+
+		// Perform mesh-wise matrix transformations.
+		matrices->translate( m->getPosition() );
+		matrices->scale( m->getScale() );
+
+		// Send the precomputed modelview and normal matrices to GPU.
+		shader->sendModelView( matrices->getModelView() );
+		shader->sendNormal( matrices->getNormal() );
+
+		m->draw();
+	}
+
+	Shader::unbind();
 }
 
 
@@ -154,7 +147,7 @@ void Renderer::renderTerrain( void )
  */
 void Renderer::renderGUI( void )
 {
-
+	// TODO.
 }
 
 
@@ -165,8 +158,8 @@ void Renderer::addEntity( Entity* entity )
 {
 	entities->insert(
 		std::pair<int, LerpMesh*>(
-			1, //entity->getID(),
-			static_cast<LerpMesh*> ( entity->getMesh() )
+			entity->getID(),
+			entity->getMesh()
 		)
 	);
 }
@@ -175,12 +168,12 @@ void Renderer::addEntity( Entity* entity )
 /*!
  * Add a terrain section to be rendererd.
  */
-void Renderer::addTerrain( Terrain* terrain )
+void Renderer::addTerrain( Chunk* chunk )
 {
 	this->terrain->insert(
 		std::pair<int, Mesh*>(
-			1, //terrain->getID(),
-			terrain->getMesh()
+			chunk->getID(),
+			chunk->getMesh()
 		)
 	);
 }
@@ -193,8 +186,17 @@ void Renderer::addGUI( GUIElement* gui )
 {
 	this->gui->insert(
 		std::pair<int, Mesh*>(
-			1, //gui->getID(),
+			gui->getID(),
 			gui->getMesh()
 		)
 	);
+}
+
+
+/*!
+ * Queries the shader resource cache for a shader.
+ */
+Shader* Renderer::getShader( std::string url )
+{
+	return shaderCache->getResource( url );
 }
