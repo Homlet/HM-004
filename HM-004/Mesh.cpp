@@ -346,55 +346,122 @@ Mesh* Mesh::createCube( glm::vec3 position, glm::vec3 size )
 
 
 /*!
- * Appends the vertices and indices of a cube to a pair of vectors.
+ * Macro for easy calculation of the indicies of a cube face based on the curent index offset.
+ */
+#define FACE_INDICES {             \
+			offset,                \
+			offset + 1,            \
+			offset + 2,            \
+			offset + 3, 0xffffffff \
+		}
+
+
+/*!
+ * Appends the vertices and indices of a full cube to a pair of vectors.
  */
 void Mesh::appendCube( glm::vec3 position, float size, std::vector<vertex>* v, std::vector<GLuint>* i )
 {
-	vertex v_a[24] = {
-		// Front
-		{        position.x,        position.y, size + position.z,  0.0, 0.0, 0.0,   0.0,  0.0,  1.0 },
-		{ size + position.x,        position.y, size + position.z,  1.0, 0.0, 0.0,   0.0,  0.0,  1.0 },
-		{ size + position.x, size + position.y, size + position.z,  1.0, 1.0, 0.0,   0.0,  0.0,  1.0 },
-		{        position.x, size + position.y, size + position.z,  0.0, 1.0, 0.0,   0.0,  0.0,  1.0 },
-		// Back
-		{ size + position.x,        position.y,        position.z,  0.0, 0.0, 0.0,   0.0,  0.0, -1.0 },
-		{        position.x,        position.y,        position.z,  1.0, 0.0, 0.0,   0.0,  0.0, -1.0 },
-		{        position.x, size + position.y,        position.z,  1.0, 1.0, 0.0,   0.0,  0.0, -1.0 },
-		{ size + position.x, size + position.y,        position.z,  0.0, 1.0, 0.0,   0.0,  0.0, -1.0 },
-		// Right
-		{ size + position.x,        position.y, size + position.z,  0.0, 0.0, 0.0,   1.0,  0.0,  0.0 },
-		{ size + position.x,        position.y,        position.z,  1.0, 0.0, 0.0,   1.0,  0.0,  0.0 },
-		{ size + position.x, size + position.y,        position.z,  1.0, 1.0, 0.0,   1.0,  0.0,  0.0 },
-		{ size + position.x, size + position.y, size + position.z,  0.0, 1.0, 0.0,   1.0,  0.0,  0.0 },
-		// Left
-		{        position.x,        position.y,        position.z,  0.0, 0.0, 0.0,  -1.0,  0.0,  0.0 },
-		{        position.x,        position.y, size + position.z,  1.0, 0.0, 0.0,  -1.0,  0.0,  0.0 },
-		{        position.x, size + position.y, size + position.z,  1.0, 1.0, 0.0,  -1.0,  0.0,  0.0 },
-		{        position.x, size + position.y,        position.z,  0.0, 1.0, 0.0,  -1.0,  0.0,  0.0 },
-		// Top
-		{        position.x, size + position.y, size + position.z,  0.0, 0.0, 0.0,   0.0,  1.0,  0.0 },
-		{ size + position.x, size + position.y, size + position.z,  1.0, 0.0, 0.0,   0.0,  1.0,  0.0 },
-		{ size + position.x, size + position.y,        position.z,  1.0, 1.0, 0.0,   0.0,  1.0,  0.0 },
-		{        position.x, size + position.y,        position.z,  0.0, 1.0, 0.0,   0.0,  1.0,  0.0 },
-		// Bottom
-		{        position.x,        position.y,        position.z,  0.0, 0.0, 0.0,   0.0, -1.0,  0.0 },
-		{ size + position.x,        position.y,        position.z,  1.0, 0.0, 0.0,   0.0, -1.0,  0.0 },
-		{ size + position.x,        position.y, size + position.z,  1.0, 1.0, 0.0,   0.0, -1.0,  0.0 },
-		{        position.x,        position.y, size + position.z,  0.0, 1.0, 0.0,   0.0, -1.0,  0.0 }
-	};
+	cube c = { true, true, true, true, true, true };
+	appendCube( position, size, c, v, i );
+}
 
+
+/*!
+ * Appends the vertices and indices of chosen faces of a cube to a pair of vectors.
+ */
+void Mesh::appendCube( glm::vec3 position, float size, cube faces, std::vector<vertex>* v, std::vector<GLuint>* i )
+{
 	GLuint offset = (GLuint) v->size();
-	GLuint i_a[30] = {
-		offset +  0, offset +  1, offset +  2, offset +  3,  0xffffffff,
-		offset +  4, offset +  5, offset +  6, offset +  7,  0xffffffff,
-		offset +  8, offset +  9, offset + 10, offset + 11,  0xffffffff,
-		offset + 12, offset + 13, offset + 14, offset + 15,  0xffffffff,
-		offset + 16, offset + 17, offset + 18, offset + 19,  0xffffffff,
-		offset + 20, offset + 21, offset + 22, offset + 23,  0xffffffff
-	};
-	
-	v->insert( v->end(), v_a, v_a + 24 );
-	i->insert( i->end(), i_a, i_a + 30 );
+
+	if ( faces.front )
+	{
+		vertex v_front[4] = {
+			{        position.x,        position.y, size + position.z,  0.0, 0.0, 0.0,   0.0,  0.0,  1.0 },
+			{ size + position.x,        position.y, size + position.z,  1.0, 0.0, 0.0,   0.0,  0.0,  1.0 },
+			{ size + position.x, size + position.y, size + position.z,  1.0, 1.0, 0.0,   0.0,  0.0,  1.0 },
+			{        position.x, size + position.y, size + position.z,  0.0, 1.0, 0.0,   0.0,  0.0,  1.0 }
+		};
+		GLuint i_a[5] = FACE_INDICES;
+		offset += 4;
+		
+		v->insert( v->end(), v_front, v_front + 4 );
+		i->insert( i->end(), i_a,     i_a     + 5 );
+	}
+
+	if ( faces.back )
+	{
+		vertex v_back[4] = {
+			{ size + position.x,        position.y,        position.z,  0.0, 0.0, 0.0,   0.0,  0.0, -1.0 },
+			{        position.x,        position.y,        position.z,  1.0, 0.0, 0.0,   0.0,  0.0, -1.0 },
+			{        position.x, size + position.y,        position.z,  1.0, 1.0, 0.0,   0.0,  0.0, -1.0 },
+			{ size + position.x, size + position.y,        position.z,  0.0, 1.0, 0.0,   0.0,  0.0, -1.0 }
+		};
+		GLuint i_a[5] = FACE_INDICES;
+		offset += 4;
+		
+		v->insert( v->end(), v_back, v_back + 4 );
+		i->insert( i->end(), i_a,    i_a    + 5 );
+	}
+
+	if ( faces.right )
+	{
+		vertex v_right[4] = {
+			{ size + position.x,        position.y, size + position.z,  0.0, 0.0, 0.0,   1.0,  0.0,  0.0 },
+			{ size + position.x,        position.y,        position.z,  1.0, 0.0, 0.0,   1.0,  0.0,  0.0 },
+			{ size + position.x, size + position.y,        position.z,  1.0, 1.0, 0.0,   1.0,  0.0,  0.0 },
+			{ size + position.x, size + position.y, size + position.z,  0.0, 1.0, 0.0,   1.0,  0.0,  0.0 }
+		};
+		GLuint i_a[5] = FACE_INDICES;
+		offset += 4;
+		
+		v->insert( v->end(), v_right, v_right + 4 );
+		i->insert( i->end(), i_a,     i_a     + 5 );
+	}
+
+	if ( faces.left )
+	{
+		vertex v_left[4] = {
+			{        position.x,        position.y,        position.z,  0.0, 0.0, 0.0,  -1.0,  0.0,  0.0 },
+			{        position.x,        position.y, size + position.z,  1.0, 0.0, 0.0,  -1.0,  0.0,  0.0 },
+			{        position.x, size + position.y, size + position.z,  1.0, 1.0, 0.0,  -1.0,  0.0,  0.0 },
+			{        position.x, size + position.y,        position.z,  0.0, 1.0, 0.0,  -1.0,  0.0,  0.0 }
+		};
+		GLuint i_a[5] = FACE_INDICES;
+		offset += 4;
+		
+		v->insert( v->end(), v_left, v_left + 4 );
+		i->insert( i->end(), i_a,    i_a    + 5 );
+	}
+
+	if ( faces.top )
+	{
+		vertex v_top[4] = {
+			{        position.x, size + position.y, size + position.z,  0.0, 0.0, 0.0,   0.0,  1.0,  0.0 },
+			{ size + position.x, size + position.y, size + position.z,  1.0, 0.0, 0.0,   0.0,  1.0,  0.0 },
+			{ size + position.x, size + position.y,        position.z,  1.0, 1.0, 0.0,   0.0,  1.0,  0.0 },
+			{        position.x, size + position.y,        position.z,  0.0, 1.0, 0.0,   0.0,  1.0,  0.0 }
+		};
+		GLuint i_a[5] = FACE_INDICES;
+		offset += 4;
+		
+		v->insert( v->end(), v_top, v_top + 4 );
+		i->insert( i->end(), i_a,   i_a   + 5 );
+	}
+
+	if ( faces.bottom )
+	{
+		vertex v_bottom[4] = {
+			{        position.x,        position.y,        position.z,  0.0, 0.0, 0.0,   0.0, -1.0,  0.0 },
+			{ size + position.x,        position.y,        position.z,  1.0, 0.0, 0.0,   0.0, -1.0,  0.0 },
+			{ size + position.x,        position.y, size + position.z,  1.0, 1.0, 0.0,   0.0, -1.0,  0.0 },
+			{        position.x,        position.y, size + position.z,  0.0, 1.0, 0.0,   0.0, -1.0,  0.0 }
+		};
+		GLuint i_a[5] = FACE_INDICES;
+		offset += 4;
+		
+		v->insert( v->end(), v_bottom, v_bottom + 4 );
+		i->insert( i->end(), i_a,      i_a      + 5 );
+	}
 }
 
 

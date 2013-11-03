@@ -11,6 +11,13 @@ struct vertex {
 };
 
 
+struct cube {
+	bool front, back,
+		 right, left,
+		 top, bottom;
+};
+
+
 class Mesh {
 private:
 	GLuint vertexID;
@@ -60,6 +67,14 @@ public:
 	static void appendCube(
 		glm::vec3 position,
 		float size,
+		std::vector<vertex>*   v,
+		std::vector<GLuint>* i
+	);
+
+	static void appendCube(
+		glm::vec3 position,
+		float size,
+		cube faces,
 		std::vector<vertex>*   v,
 		std::vector<GLuint>* i
 	);

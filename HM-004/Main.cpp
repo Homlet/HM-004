@@ -88,7 +88,7 @@ Core::Core( void )
 
 	// Dummy terrain.
 	Terrain* terrain = new Terrain();
-	renderer->addTerrain( (*terrain->chunks)[glm::ivec3( 0, 0, 0 )] );
+	renderer->addTerrain( (*terrain->chunks)[glm::ivec3( -32, -32, -32 )] );
 }
 
 

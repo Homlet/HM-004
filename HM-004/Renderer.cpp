@@ -88,9 +88,9 @@ void Renderer::render( double alpha )
 
 	matrices->lookAt(
 		glm::vec3(
-			glm::cos( mx / 200 ) * 46.0 * glm::sin( my / 200 ),
-			glm::cos( my / 200 ) * 46.0,
-			glm::sin( mx / 200 ) * 46.0 * glm::sin( my / 200 )
+			glm::cos( mx / 200 ) * 40.0 * glm::sin( my / 200 ),
+			glm::cos( my / 200 ) * 40.0,
+			glm::sin( mx / 200 ) * 40.0 * glm::sin( my / 200 )
 		),
 		glm::vec3( 0.0 ),
 		glm::vec3( 0.0, 1.0, 0.0 )
