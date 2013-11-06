@@ -28,6 +28,7 @@ public:
 	);
 
 	glm::mat4 getModel( void ) const;
+	glm::mat4 getView( void ) const;
 	glm::mat4 getModelView( void ) const;
 	glm::mat4 getProjection( void ) const;
 	glm::mat3 getNormal( void ) const;

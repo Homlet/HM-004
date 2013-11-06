@@ -68,8 +68,13 @@ Renderer::Renderer( GLFWwindow* window ) :
 	// Dummy texture.
 	textureCache->getResource( "texture/block_grass_top.tga" )->bind();
 
+	// Dummy mesh.
+	mesh = Mesh::createTorus( glm::vec3( 0.0 ), glm::vec3( 1.0, 1.0, 1.0 ), 28, 8, 40 );
+	mesh->setOrientation( glm::vec4( 0, 1, 0, 0 ) );
+
 	shader->bind();
-	shader->sendProjection( matrices->getProjection() );
+	if ( shader->usesProjection() )
+		shader->sendProjection( matrices->getProjection() );
 	Shader::unbind();
 
 	setupOGL();
@@ -88,13 +93,46 @@ void Renderer::render( double alpha )
 
 	matrices->lookAt(
 		glm::vec3(
-			glm::cos( mx / 200 ) * 40.0 * glm::sin( my / 200 ),
-			glm::cos( my / 200 ) * 40.0,
-			glm::sin( mx / 200 ) * 40.0 * glm::sin( my / 200 )
+			glm::cos( mx / 200 ) * 54.0 * glm::sin( my / 200 ),
+			glm::cos( my / 200 ) * 54.0,
+			glm::sin( mx / 200 ) * 54.0 * glm::sin( my / 200 )
 		),
 		glm::vec3( 0.0 ),
 		glm::vec3( 0.0, 1.0, 0.0 )
 	);
+
+	shader->bind();
+
+	// Send directional light data.
+	if ( shader->usesLightDir() )
+	{
+		shader->sendLightDir(
+			glm::normalize(
+				glm::mat3( matrices->getView() ) *
+				glm::vec3( 1.0, 0.7, 0.9 )
+			)
+		);
+		shader->sendLightColor( glm::vec3( 1.0, 1.0, 0.8 ) );
+	}
+
+	// Dummy render.
+	{
+		// Reset the model matrix.
+		matrices->loadIdentity();
+
+		// Perform mesh-wise matrix transformations.
+		matrices->translate( mesh->getPosition() );
+		matrices->scale( mesh->getScale() );
+		matrices->rotate( glm::vec3( mesh->getOrientation() ), mesh->getOrientation().w );
+
+		// Send the precomputed modelview and normal matrices to GPU.
+		if ( shader->usesModelView() )
+			shader->sendModelView( matrices->getModelView() );
+		if ( shader->usesNormal() )
+			shader->sendNormal( matrices->getNormal() );
+
+		mesh->draw();
+	}
 
 	renderEntities( alpha );
 	renderTerrain();
@@ -127,13 +165,14 @@ void Renderer::renderTerrain( void )
 		// Reset the model matrix.
 		matrices->loadIdentity();
 
-		// Perform mesh-wise matrix transformations.
+		// Only translation is required of terrain.
 		matrices->translate( m->getPosition() );
-		matrices->scale( m->getScale() );
 
 		// Send the precomputed modelview and normal matrices to GPU.
-		shader->sendModelView( matrices->getModelView() );
-		shader->sendNormal( matrices->getNormal() );
+		if ( shader->usesModelView() )
+			shader->sendModelView( matrices->getModelView() );
+		if ( shader->usesNormal() )
+			shader->sendNormal( matrices->getNormal() );
 
 		m->draw();
 	}

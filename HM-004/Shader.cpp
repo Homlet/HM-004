@@ -81,9 +81,11 @@ Shader::Shader( std::string name, std::string vert_src, std::string frag_src ) :
 	// Setup uniforms.
 	bind();
 	{
-		uniformLoc_MV = glGetUniformLocation( ID, "u_MV" );
-		uniformLoc_P  = glGetUniformLocation( ID, "u_P"  );
-		uniformLoc_N  = glGetUniformLocation( ID, "u_N"  );
+		uniformLoc_MV         = glGetUniformLocation( ID, "u_MV"         );
+		uniformLoc_P          = glGetUniformLocation( ID, "u_P"          );
+		uniformLoc_N          = glGetUniformLocation( ID, "u_N"          );
+		uniformLoc_lightDir   = glGetUniformLocation( ID, "u_lightDir"   );
+		uniformLoc_lightColor = glGetUniformLocation( ID, "u_lightColor" );
 	}
 	unbind();
 
@@ -113,11 +115,29 @@ void Shader::unbind( void )
 
 
 /*!
+ * Returns true if this shader uses the modelview matrix uniform.
+ */
+bool Shader::usesModelView( void )
+{
+	return uniformLoc_MV != -1;
+}
+
+
+/*!
  * Send modelview matrix to the GPU as a uniform.
  */
 void Shader::sendModelView( glm::mat4 mv )
 {
 	glUniformMatrix4fv( uniformLoc_MV, 1, false, glm::value_ptr( mv ) );
+}
+
+
+/*!
+ * Returns true if this shader uses the projection matrix uniform.
+ */
+bool Shader::usesProjection( void )
+{
+	return uniformLoc_P != -1;
 }
 
 
@@ -131,11 +151,47 @@ void Shader::sendProjection( glm::mat4 p )
 
 
 /*!
- * Send inverse-transpose model (normal) matrix to the GPU as a uniform.
+ * Returns true if this shader uses the normal matrix uniform.
+ */
+bool Shader::usesNormal( void )
+{
+	return uniformLoc_N != -1;
+}
+
+
+/*!
+ * Send inverse-transpose modelview (normal) matrix to the GPU as a uniform.
  */
 void Shader::sendNormal( glm::mat3 n )
 {
 	glUniformMatrix3fv( uniformLoc_N, 1, false, glm::value_ptr( n ) );
+}
+
+
+/*!
+ * Returns true if this shader uses directional lighting uniforms.
+ */
+bool Shader::usesLightDir( void )
+{
+	return uniformLoc_lightDir != -1 && uniformLoc_lightColor != -1;
+}
+
+
+/*!
+ * Send the light direction vector to the GPU as a uniform.
+ */
+void Shader::sendLightDir( glm::vec3 light_dir )
+{
+	glUniform3fv( uniformLoc_lightDir, 1, glm::value_ptr( light_dir ) );
+}
+
+
+/*!
+ * Send the light color to the GPU as a uniform.
+ */
+void Shader::sendLightColor( glm::vec3 light_color )
+{
+	glUniform3fv( uniformLoc_lightColor, 1, glm::value_ptr( light_color ) );
 }
 
 

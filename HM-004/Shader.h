@@ -20,7 +20,9 @@ private:
 
 	GLint uniformLoc_MV,
 		  uniformLoc_P,
-		  uniformLoc_N;
+		  uniformLoc_N,
+		  uniformLoc_lightDir,
+		  uniformLoc_lightColor;
 
 	GLuint compileShader( std::string src, GLenum type );
 
@@ -30,9 +32,18 @@ public:
 	       void   bind( void );
 	static void unbind( void );
 	
+	bool  usesModelView( void );
 	void  sendModelView( glm::mat4 mv );
+
+	bool usesProjection( void );
 	void sendProjection( glm::mat4 p );
+
+	bool     usesNormal( void );
 	void     sendNormal( glm::mat3 n );
+
+	bool   usesLightDir( void );
+	void   sendLightDir( glm::vec3 light_dir );
+	void sendLightColor( glm::vec3 light_color );
 
 	bool isCompiled( void );
 };

@@ -27,6 +27,7 @@ private:
 
 	Matrices* matrices;
 	Shader* shader;
+	Mesh* mesh;
 
 	void setupOGL( void );
 

@@ -51,7 +51,7 @@ Core::Core( void )
 	glfwWindowHint( GLFW_GREEN_BITS, WIN_GREEN_BITS );
 	glfwWindowHint( GLFW_BLUE_BITS,  WIN_BLUE_BITS  );
 	glfwWindowHint( GLFW_ALPHA_BITS, WIN_ALPHA_BITS );
-	glfwWindowHint( GLFW_SAMPLES, WIN_FSAA );
+	glfwWindowHint( GLFW_SAMPLES,    WIN_FSAA );
 
 	glfwWindowHint( GLFW_RESIZABLE, GL_FALSE );
 
@@ -87,8 +87,8 @@ Core::Core( void )
 	renderer = new Renderer( window );
 
 	// Dummy terrain.
-	Terrain* terrain = new Terrain();
-	renderer->addTerrain( (*terrain->chunks)[glm::ivec3( -32, -32, -32 )] );
+	//Terrain* terrain = new Terrain();
+	//renderer->addTerrain( (*terrain->chunks)[glm::ivec3( -16, -16, -16 )] );
 }
 
 

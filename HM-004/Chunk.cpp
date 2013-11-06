@@ -8,7 +8,7 @@ Chunk::Chunk( glm::ivec3 position, int size ) :
 	changed( true ),
 	position( position ),
 	size( size ),
-	id( (int)( glfwGetTime() * 1000 ) )
+	id( (int)( glfwGetTime() * 100000 ) )
 {
 	blocks = new Block**[size];
 	for ( int i = 0; i < size; i++ )
@@ -19,9 +19,11 @@ Chunk::Chunk( glm::ivec3 position, int size ) :
 			blocks[i][j] = new Block[size];
 			for ( int k = 0; k < size; k++ )
 			{
-				blocks[i][j][k] = Block();
-				blocks[i][j][k].type =
-					( glm::sqrt((32-i)*(32-i)+(32-j)*(32-j)+(32-k)*(32-k)) < 32 ) ? 1 : 0;
+				int x = 16 - i;
+				int y = 16 - j;
+				int z = 16 - k;
+				int r = 15;
+				blocks[i][j][k].type = x*x + y*y + z*z < r*r;
 			}
 		}
 	}

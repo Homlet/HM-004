@@ -52,6 +52,12 @@ glm::mat4 Matrices::getModel( void ) const
 }
 
 
+glm::mat4 Matrices::getView( void ) const
+{
+	return view;
+}
+
+
 glm::mat4 Matrices::getModelView( void ) const
 {
 	return view * model;
@@ -66,5 +72,5 @@ glm::mat4 Matrices::getProjection( void ) const
 
 glm::mat3 Matrices::getNormal( void ) const
 {
-	return glm::transpose( glm::inverse( glm::mat3( model ) ) );
+	return glm::transpose( glm::inverse( glm::mat3( view * model ) ) );
 }

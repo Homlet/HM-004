@@ -9,8 +9,8 @@ public:
 	bool operator()(glm::ivec3 const& l, glm::ivec3 const& r )
 	{
 		return l.x  < r.x ||
-			l.x == r.x && l.y  < r.y ||
-			l.x == r.x && l.y == r.y && l.z < r.z;
+			   l.x == r.x && l.y  < r.y ||
+			   l.x == r.x && l.y == r.y && l.z < r.z;
 	};
 };
 

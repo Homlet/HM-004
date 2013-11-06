@@ -82,8 +82,8 @@ public:
 	static Mesh* createTorus(
 		glm::vec3 position,
 		glm::vec3 size,
-		float inner_radius,
-		float outer_radius,
+		float radius,
+		float tube_radius,
 		int resolution
 	);
 };
