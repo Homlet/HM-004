@@ -3,6 +3,12 @@
 
 
 /*!
+ * Stores the ID of the currently bound shader.
+ */
+GLuint Shader::bound = 0;
+
+
+/*!
  * Attempts to compile a shader.
  *
  * @return ID of shader if successful, 0 if not.
@@ -86,6 +92,16 @@ Shader::Shader( std::string name, std::string vert_src, std::string frag_src ) :
 		uniformLoc_N          = glGetUniformLocation( ID, "u_N"          );
 		uniformLoc_lightDir   = glGetUniformLocation( ID, "u_lightDir"   );
 		uniformLoc_lightColor = glGetUniformLocation( ID, "u_lightColor" );
+		uniformLoc_sMV        = glGetUniformLocation( ID, "u_sMV"        );
+		uniformLoc_sP         = glGetUniformLocation( ID, "u_sP"         );
+		
+		GLuint sampler_2D       = glGetUniformLocation( ID, "u_2D"       );
+		GLuint sampler_2DShadow = glGetUniformLocation( ID, "u_2DShadow" );
+
+		if ( sampler_2D != -1 )
+			glUniform1i( sampler_2D, 0 );
+		if ( sampler_2DShadow != -1 )
+			glUniform1i( sampler_2DShadow, 1 );
 	}
 	unbind();
 
@@ -100,7 +116,7 @@ void Shader::bind( void )
 {
 	if ( compiled )
 	{
-		glUseProgram( ID );
+		glUseProgram( bound = ID );
 	}
 }
 
@@ -110,7 +126,16 @@ void Shader::bind( void )
  */
 void Shader::unbind( void )
 {
-	glUseProgram( 0 );
+	glUseProgram( bound = 0 );
+}
+
+
+/*!
+ * Returns true if this shader is currently bound for rendering.
+ */
+bool Shader::isBound( void )
+{
+	return bound == ID;
 }
 
 
@@ -124,11 +149,25 @@ bool Shader::usesModelView( void )
 
 
 /*!
+ * Macro to bind shaders when sending uniforms, then unbind only if they weren't
+ * bound previously.
+ */
+#define BIND_LOCK(a)	bool wasBound = true;      \
+						if ( !isBound() )          \
+						{                          \
+							bind();                \
+							wasBound = false;      \
+						}                          \
+						a                          \
+						if ( !wasBound ) unbind();
+
+
+/*!
  * Send modelview matrix to the GPU as a uniform.
  */
 void Shader::sendModelView( glm::mat4 mv )
 {
-	glUniformMatrix4fv( uniformLoc_MV, 1, false, glm::value_ptr( mv ) );
+	BIND_LOCK( glUniformMatrix4fv( uniformLoc_MV, 1, false, glm::value_ptr( mv ) ); )
 }
 
 
@@ -146,7 +185,7 @@ bool Shader::usesProjection( void )
  */
 void Shader::sendProjection( glm::mat4 p )
 {
-	glUniformMatrix4fv( uniformLoc_P, 1, false, glm::value_ptr( p ) );
+	BIND_LOCK( glUniformMatrix4fv( uniformLoc_P, 1, false, glm::value_ptr( p ) ); )
 }
 
 
@@ -164,7 +203,7 @@ bool Shader::usesNormal( void )
  */
 void Shader::sendNormal( glm::mat3 n )
 {
-	glUniformMatrix3fv( uniformLoc_N, 1, false, glm::value_ptr( n ) );
+	BIND_LOCK( glUniformMatrix3fv( uniformLoc_N, 1, false, glm::value_ptr( n ) ); )
 }
 
 
@@ -182,7 +221,7 @@ bool Shader::usesLightDir( void )
  */
 void Shader::sendLightDir( glm::vec3 light_dir )
 {
-	glUniform3fv( uniformLoc_lightDir, 1, glm::value_ptr( light_dir ) );
+	BIND_LOCK( glUniform3fv( uniformLoc_lightDir, 1, glm::value_ptr( light_dir ) ); )
 }
 
 
@@ -191,7 +230,34 @@ void Shader::sendLightDir( glm::vec3 light_dir )
  */
 void Shader::sendLightColor( glm::vec3 light_color )
 {
-	glUniform3fv( uniformLoc_lightColor, 1, glm::value_ptr( light_color ) );
+	BIND_LOCK( glUniform3fv( uniformLoc_lightColor, 1, glm::value_ptr( light_color ) ); )
+}
+
+
+/*!
+ * Returns true if this shader uses matrices to sample a shadow map.
+ */
+bool Shader::usesShadowMatrices( void )
+{
+	return uniformLoc_sMV != -1 && uniformLoc_sP != -1;
+}
+
+
+/*!
+ * Send shadow modelview matrix to the GPU as a uniform.
+ */
+void Shader::sendShadowModelView( glm::mat4 smv )
+{
+	BIND_LOCK( glUniformMatrix4fv( uniformLoc_sMV, 1, false, glm::value_ptr( smv ) ); )
+}
+
+
+/*!
+ * Send shadow projection matrix to the GPU as a uniform.
+ */
+void Shader::sendShadowProjection( glm::mat4 sp )
+{
+	BIND_LOCK( glUniformMatrix4fv( uniformLoc_sP, 1, false, glm::value_ptr( sp ) ); )
 }
 
 
@@ -202,7 +268,6 @@ bool Shader::isCompiled( void )
 {
 	return compiled;
 }
-
 
 
 /*!

@@ -46,6 +46,12 @@ void Matrices::setProjection( double fov, double ratio, double near, double far 
 }
 
 
+void Matrices::setOrtho( double xNear, double xFar, double yNear, double yFar, double zNear, double zFar )
+{
+	projection = glm::ortho( xNear, xFar, yNear, yFar, zNear, zFar );
+}
+
+
 glm::mat4 Matrices::getModel( void ) const
 {
 	return model;

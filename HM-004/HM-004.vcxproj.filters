@@ -114,6 +114,9 @@
     <ClInclude Include="Chunk.h">
       <Filter>Header Files\State\Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="FBO.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -151,6 +154,9 @@
     </ClCompile>
     <ClCompile Include="GUIElement.cpp">
       <Filter>Source Files\State\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="FBO.cpp">
+      <Filter>Source Files\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -215,6 +221,24 @@
       <Filter>Resource Files\shader</Filter>
     </None>
     <None Include="shader\test_phong.vert">
+      <Filter>Resource Files\shader</Filter>
+    </None>
+    <None Include="shader\terrain.prog">
+      <Filter>Resource Files\shader</Filter>
+    </None>
+    <None Include="shader\phong.frag">
+      <Filter>Resource Files\shader</Filter>
+    </None>
+    <None Include="shader\phong.vert">
+      <Filter>Resource Files\shader</Filter>
+    </None>
+    <None Include="shader\shadow.frag">
+      <Filter>Resource Files\shader</Filter>
+    </None>
+    <None Include="shader\shadow.prog">
+      <Filter>Resource Files\shader</Filter>
+    </None>
+    <None Include="shader\shadow.vert">
       <Filter>Resource Files\shader</Filter>
     </None>
   </ItemGroup>

@@ -26,6 +26,11 @@ public:
 		double near,
 		double far
 	);
+	void setOrtho(
+		double xNear, double xFar,
+		double yNear, double yFar,
+		double zNear, double zFar
+	);
 
 	glm::mat4 getModel( void ) const;
 	glm::mat4 getView( void ) const;

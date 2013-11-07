@@ -13,8 +13,9 @@ class ResourceLoader;
 
 class Shader {
 private:
-	GLuint ID;
-	std::string name;
+	static GLuint bound;
+	       GLuint ID;
+	  std::string name;
 
 	bool compiled;
 
@@ -22,7 +23,9 @@ private:
 		  uniformLoc_P,
 		  uniformLoc_N,
 		  uniformLoc_lightDir,
-		  uniformLoc_lightColor;
+		  uniformLoc_lightColor,
+		  uniformLoc_sMV,
+		  uniformLoc_sP;
 
 	GLuint compileShader( std::string src, GLenum type );
 
@@ -31,6 +34,7 @@ public:
 
 	       void   bind( void );
 	static void unbind( void );
+	      bool isBound( void );
 	
 	bool  usesModelView( void );
 	void  sendModelView( glm::mat4 mv );
@@ -44,6 +48,10 @@ public:
 	bool   usesLightDir( void );
 	void   sendLightDir( glm::vec3 light_dir );
 	void sendLightColor( glm::vec3 light_color );
+
+	bool   usesShadowMatrices( void );
+	void  sendShadowModelView( glm::mat4 smv );
+	void sendShadowProjection( glm::mat4 sp );
 
 	bool isCompiled( void );
 };

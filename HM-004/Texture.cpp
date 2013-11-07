@@ -108,7 +108,8 @@ Texture::Texture( std::string name, std::string url ) :
  */
 void Texture::bind( void )
 {
-	glBindTexture( GL_TEXTURE_2D, ID );
+	glActiveTexture( GL_TEXTURE0       );
+	glBindTexture(   GL_TEXTURE_2D, ID );
 }
 
 
@@ -117,7 +118,8 @@ void Texture::bind( void )
  */
 void Texture::unbind( void )
 {
-	glBindTexture( GL_TEXTURE_2D, 0 );
+	glActiveTexture( GL_TEXTURE0      );
+	glBindTexture(   GL_TEXTURE_2D, 0 );
 }
 
 

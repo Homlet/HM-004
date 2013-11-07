@@ -8,6 +8,7 @@
 
 #include "Matrices.h"
 #include "Shader.h"
+#include "FBO.h"
 #include "Texture.h"
 #include "Mesh.h"
 
@@ -21,6 +22,8 @@
  */
 void Renderer::setupOGL( void )
 {
+	glEnable( GL_TEXTURE_2D );
+
 	glEnable( GL_PRIMITIVE_RESTART );
 	glPrimitiveRestartIndex( 0xffffffff );
 
@@ -47,7 +50,13 @@ Renderer::Renderer( GLFWwindow* window ) :
 	     gui( new std::map<int,     Mesh*>() ),
 	 shaderCache( new ResourceCache<Shader>()  ),
 	textureCache( new ResourceCache<Texture>() ),
-	matrices( new Matrices() )
+	matrices( new Matrices() ),
+//	 shaderEntity( shaderCache->getResource( "shader/entity.prog"  ) ),
+	shaderTerrain( shaderCache->getResource( "shader/terrain.prog" ) ),
+//	    shaderGUI( shaderCache->getResource( "shader/gui.prog"     ) ),
+	 shaderShadow( shaderCache->getResource( "shader/shadow.prog"  ) ),
+	shadow( new ShadowMap() ),
+	shadowMatrices( new Matrices() )
 {
 	// Setup matrices.
 	matrices->setProjection(
@@ -57,27 +66,55 @@ Renderer::Renderer( GLFWwindow* window ) :
 		1000
 	);
 	matrices->lookAt(
-		glm::vec3( 0.0, 0.0, -1.0 ),
+		glm::vec3( 0.0, 0.0, 43.0 ),
 		glm::vec3( 0.0 ),
 		glm::vec3( 0.0, 1.0, 0.0 )
 	);
+
+	// Setup shadow map matrices.
+	lightDir   = glm::vec3( 1.0, 0.7, 0.9 );
+	lightColor = glm::vec3( 1.0, 1.0, 0.8 );
+	shadowMatrices->setOrtho(
+		-64, 63,
+		-64, 63,
+		-64, 63
+	);
+	shadowMatrices->lookAt(
+		glm::vec3( 0.0 ),
+		lightDir,
+		glm::vec3( 0.0, 1.0, 0.0 )
+	);
+	glm::mat4 shadowBias(
+		0.5, 0.0, 0.0, 0.0,
+		0.0, 0.5, 0.0, 0.0,
+		0.0, 0.0, 0.5, 0.0,
+		0.5, 0.5, 0.5, 1.0
+	);
 	
-	// Dummy shader.
-	shader = shaderCache->getResource( "shader/test_phong.prog" );
+	// Send projection matrices to shaders.
+	/* TODO: if ( shaderEntity->usesProjection() )
+		shaderTerrain->sendProjection( matrices->getProjection() );
+	if ( shaderEntity->usesShadowMatrices() )
+		shaderEntity->sendShadowProjection( shadowBias * shadowMatrices->getProjection() ); */
+
+	if ( shaderTerrain->usesProjection() )
+		shaderTerrain->sendProjection( matrices->getProjection() );
+	if ( shaderTerrain->usesShadowMatrices() )
+		shaderTerrain->sendShadowProjection( shadowBias * shadowMatrices->getProjection() );
+
+	/* TODO: if ( shaderGUI->usesProjection() )
+		shaderGUI->sendProjection( matrices->getProjection() ); */
+
+	if ( shaderShadow->usesProjection() )
+		shaderShadow->sendProjection( shadowMatrices->getProjection() );
+
+	setupOGL();
 
 	// Dummy texture.
 	textureCache->getResource( "texture/block_grass_top.tga" )->bind();
 
 	// Dummy mesh.
-	mesh = Mesh::createTorus( glm::vec3( 0.0 ), glm::vec3( 1.0, 1.0, 1.0 ), 28, 8, 40 );
-	mesh->setOrientation( glm::vec4( 0, 1, 0, 0 ) );
-
-	shader->bind();
-	if ( shader->usesProjection() )
-		shader->sendProjection( matrices->getProjection() );
-	Shader::unbind();
-
-	setupOGL();
+	m = Mesh::createTorus( glm::vec3( 0.0 ), glm::vec3( 1.0, 1.0, 1.0 ), 20, 8, 40 );
 }
 
 
@@ -91,52 +128,54 @@ void Renderer::render( double alpha )
 
 	my = glm::clamp<double>( WIN_H - my, 0.1, WIN_H );
 
-	matrices->lookAt(
-		glm::vec3(
-			glm::cos( mx / 200 ) * 54.0 * glm::sin( my / 200 ),
-			glm::cos( my / 200 ) * 54.0,
-			glm::sin( mx / 200 ) * 54.0 * glm::sin( my / 200 )
-		),
+	if ( glfwGetMouseButton( window, 0 ) )
+	{
+		matrices->lookAt(
+			glm::vec3(
+				glm::cos( mx / 200 ) * 43.0 * glm::sin( my / 200 ),
+				glm::cos( my / 200 ) * 43.0,
+				glm::sin( mx / 200 ) * 43.0 * glm::sin( my / 200 )
+			),
+			glm::vec3( 0.0 ),
+			glm::vec3( 0.0, 1.0, 0.0 )
+		);
+	} else if( glfwGetMouseButton( window, 1 ) )
+	{
+		lightDir = glm::vec3(
+			glm::cos( mx / 200 ) * glm::sin( my / 200 ),
+			glm::cos( my / 200 ),
+			glm::sin( mx / 200 ) * glm::sin( my / 200 )
+		);
+	}
+
+	// Render shadow map as a normal scene.
+	shadowMatrices->lookAt(
 		glm::vec3( 0.0 ),
+		lightDir,
 		glm::vec3( 0.0, 1.0, 0.0 )
 	);
 
-	shader->bind();
+	shadow->bind();
 
-	// Send directional light data.
-	if ( shader->usesLightDir() )
-	{
-		shader->sendLightDir(
-			glm::normalize(
-				glm::mat3( matrices->getView() ) *
-				glm::vec3( 1.0, 0.7, 0.9 )
-			)
-		);
-		shader->sendLightColor( glm::vec3( 1.0, 1.0, 0.8 ) );
-	}
+	glClear( GL_DEPTH_BUFFER_BIT );
+	glDisable( GL_CULL_FACE );
 
-	// Dummy render.
-	{
-		// Reset the model matrix.
-		matrices->loadIdentity();
+	renderTerrain(         shaderShadow, shadowMatrices );
+	renderEntities( alpha, shaderShadow, shadowMatrices );
 
-		// Perform mesh-wise matrix transformations.
-		matrices->translate( mesh->getPosition() );
-		matrices->scale( mesh->getScale() );
-		matrices->rotate( glm::vec3( mesh->getOrientation() ), mesh->getOrientation().w );
+	FBO::unbind();
+	
+	// Render final scene using the shadow matrices to cast shadows.
+	shadow->bindTexture();
 
-		// Send the precomputed modelview and normal matrices to GPU.
-		if ( shader->usesModelView() )
-			shader->sendModelView( matrices->getModelView() );
-		if ( shader->usesNormal() )
-			shader->sendNormal( matrices->getNormal() );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	glEnable( GL_CULL_FACE );
 
-		mesh->draw();
-	}
+	renderTerrain(         shaderTerrain, matrices, shadowMatrices );
+	renderEntities( alpha, shaderTerrain,  matrices, shadowMatrices );
+	renderGUI(             shaderGUI,     matrices );
 
-	renderEntities( alpha );
-	renderTerrain();
-	renderGUI();
+	FBO::unbindTexture();
 }
 
 
@@ -145,34 +184,87 @@ void Renderer::render( double alpha )
  *
  * @param alpha amount to blend between last and current frame.
  */
-void Renderer::renderEntities( double alpha )
+void Renderer::renderEntities( double alpha, Shader* shader, Matrices* mat, Matrices* shadowMat )
 {
-	// TODO.
+	shader->bind();
+
+	// Send directional light data.
+	if ( shader->usesLightDir() )
+	{
+		shader->sendLightDir( glm::normalize( glm::mat3( mat->getView() ) * lightDir ) );
+		shader->sendLightColor( lightColor );
+	}
+
+	// Reset the model matrix.
+	mat->loadIdentity();
+
+	// Only translation is required for terrain.
+	mat->translate( m->getPosition() );
+
+	// Send the precomputed modelview and normal (inverse-
+	// transpose modelview) matrices to GPU.
+	if ( shader->usesModelView() )
+		shader->sendModelView( mat->getModelView() );
+
+	if ( shader->usesNormal() )
+		shader->sendNormal( mat->getNormal() );
+
+	// Compute and send the shadow matrices if needed.
+	if ( shadowMat != 0 &&
+			shader->usesShadowMatrices() )
+	{
+		shadowMat->loadIdentity();
+		shadowMat->translate( m->getPosition() );
+		shader->sendShadowModelView( shadowMat->getModelView() );
+	}
+
+	m->draw();
+
+	Shader::unbind();
 }
 
 
 /*!
  * Draw terrain to the back buffer.
  */
-void Renderer::renderTerrain( void )
+void Renderer::renderTerrain( Shader* shader, Matrices* mat, Matrices* shadowMat )
 {
 	shader->bind();
 
+	// Send directional light data.
+	if ( shader->usesLightDir() )
+	{
+		shader->sendLightDir( glm::normalize( glm::mat3( mat->getView() ) * lightDir ) );
+		shader->sendLightColor( lightColor );
+	}
+
+	// Render chunks.
 	for ( auto itr = terrain->begin(); itr != terrain->end(); itr++ )
 	{
 		Mesh* m = itr->second;
 
 		// Reset the model matrix.
-		matrices->loadIdentity();
+		mat->loadIdentity();
 
-		// Only translation is required of terrain.
-		matrices->translate( m->getPosition() );
+		// Only translation is required for terrain.
+		mat->translate( m->getPosition() );
 
-		// Send the precomputed modelview and normal matrices to GPU.
+		// Send the precomputed modelview and normal (inverse-
+		// transpose modelview) matrices to GPU.
 		if ( shader->usesModelView() )
-			shader->sendModelView( matrices->getModelView() );
+			shader->sendModelView( mat->getModelView() );
+
 		if ( shader->usesNormal() )
-			shader->sendNormal( matrices->getNormal() );
+			shader->sendNormal( mat->getNormal() );
+
+		// Compute and send the shadow matrices if needed.
+		if ( shadowMat != 0 &&
+			 shader->usesShadowMatrices() )
+		{
+			shadowMat->loadIdentity();
+			shadowMat->translate( m->getPosition() );
+			shader->sendShadowModelView( shadowMat->getModelView() );
+		}
 
 		m->draw();
 	}
@@ -184,7 +276,7 @@ void Renderer::renderTerrain( void )
 /*!
  * Draw GUI to the back buffer, ignoring the depth buffer.
  */
-void Renderer::renderGUI( void )
+void Renderer::renderGUI( Shader* shader, Matrices* mat )
 {
 	// TODO.
 }
