@@ -114,7 +114,7 @@ Renderer::Renderer( GLFWwindow* window ) :
 	textureCache->getResource( "texture/block_grass_top.tga" )->bind();
 
 	// Dummy mesh.
-	m = Mesh::createTorus( glm::vec3( 0.0 ), glm::vec3( 1.0, 1.0, 1.0 ), 20, 8, 40 );
+	m = Mesh::createTorus( glm::vec3( 0.0 ), glm::vec3( 1.0, 1.0, 1.0 ), 20, 8, 60 );
 }
 
 
