@@ -466,6 +466,25 @@ void Mesh::appendCube( glm::vec3 position, float size, cube faces, std::vector<v
 
 
 /*!
+ * Appends the vertices and indices of a single given 2d quad to a 3d mesh, using an up vector.
+ */
+void Mesh::appendQuad( quad q, std::vector<vertex>* v, std::vector<GLuint>* i )
+{
+	vertex v_face[4] = {
+		{ q.p0.x, q.p0.y, q.p0.z,   0.0,  0.0,  0.0,   q.n.x, q.n.y, q.n.z },
+		{ q.p1.x, q.p1.y, q.p1.z,   q.w,  0.0,  0.0,   q.n.x, q.n.y, q.n.z },
+		{ q.p2.x, q.p2.y, q.p2.z,   q.w,  q.h,  0.0,   q.n.x, q.n.y, q.n.z },
+		{ q.p3.x, q.p3.y, q.p3.z,   0.0,  q.h,  0.0,   q.n.x, q.n.y, q.n.z }
+	};
+	GLuint offset = (GLuint) v->size();
+	GLuint i_a[5] = FACE_INDICES;
+		
+	v->insert( v->end(), v_face, v_face + 4 );
+	i->insert( i->end(), i_a,    i_a    + 5 );
+}
+
+
+/*!
  * Returns a pointer to a torus mesh with given dimensions.
  */
 Mesh* Mesh::createTorus(

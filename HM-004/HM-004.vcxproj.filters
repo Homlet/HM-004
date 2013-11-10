@@ -241,5 +241,11 @@
     <None Include="shader\shadow.vert">
       <Filter>Resource Files\shader</Filter>
     </None>
+    <None Include="shader\terrain.frag">
+      <Filter>Resource Files\shader</Filter>
+    </None>
+    <None Include="shader\terrain.vert">
+      <Filter>Resource Files\shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

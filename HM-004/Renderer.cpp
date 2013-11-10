@@ -17,6 +17,12 @@
 #include "GUIElement.h"
 
 
+void scroll( GLFWwindow* window, double x, double y )
+{
+	Core::getRenderer()->dist -= (float) y;
+}
+
+
 /*!
  * Sets up the OpenGL state.
  */
@@ -60,7 +66,7 @@ Renderer::Renderer( GLFWwindow* window ) :
 {
 	// Setup matrices.
 	matrices->setProjection(
-		90,
+		80,
 		(float) WIN_W / WIN_H,
 		0.1,
 		1000
@@ -111,10 +117,10 @@ Renderer::Renderer( GLFWwindow* window ) :
 	setupOGL();
 
 	// Dummy texture.
-	textureCache->getResource( "texture/block_grass_top.tga" )->bind();
+	textureCache->getResource( "texture/block_sand.tga" )->bind();
 
-	// Dummy mesh.
-	m = Mesh::createTorus( glm::vec3( 0.0 ), glm::vec3( 1.0, 1.0, 1.0 ), 20, 8, 60 );
+	glfwSetScrollCallback( window, scroll );
+	dist = 46.0f;
 }
 
 
@@ -132,11 +138,11 @@ void Renderer::render( double alpha )
 	{
 		matrices->lookAt(
 			glm::vec3(
-				glm::cos( mx / 200 ) * 43.0 * glm::sin( my / 200 ),
-				glm::cos( my / 200 ) * 43.0,
-				glm::sin( mx / 200 ) * 43.0 * glm::sin( my / 200 )
+				glm::cos( mx / 200 ) * dist * glm::sin( my / 200 ) + 64.0,
+				glm::cos( my / 200 ) * dist + 64.0,
+				glm::sin( mx / 200 ) * dist * glm::sin( my / 200 ) + 64.0
 			),
-			glm::vec3( 0.0 ),
+			glm::vec3( 64.0, 64.0, 64.0 ),
 			glm::vec3( 0.0, 1.0, 0.0 )
 		);
 	} else if( glfwGetMouseButton( window, 1 ) )
@@ -147,7 +153,7 @@ void Renderer::render( double alpha )
 			glm::sin( mx / 200 ) * glm::sin( my / 200 )
 		);
 	}
-
+	
 	// Render shadow map as a normal scene.
 	shadowMatrices->lookAt(
 		glm::vec3( 0.0 ),
@@ -159,7 +165,7 @@ void Renderer::render( double alpha )
 
 	glClear( GL_DEPTH_BUFFER_BIT );
 	glDisable( GL_CULL_FACE );
-
+	
 	renderTerrain(         shaderShadow, shadowMatrices );
 	renderEntities( alpha, shaderShadow, shadowMatrices );
 
@@ -172,7 +178,7 @@ void Renderer::render( double alpha )
 	glEnable( GL_CULL_FACE );
 
 	renderTerrain(         shaderTerrain, matrices, shadowMatrices );
-	renderEntities( alpha, shaderTerrain,  matrices, shadowMatrices );
+	renderEntities( alpha, shaderEntity,  matrices, shadowMatrices ); // TODO: switch shader back.
 	renderGUI(             shaderGUI,     matrices );
 
 	FBO::unbindTexture();
@@ -186,41 +192,7 @@ void Renderer::render( double alpha )
  */
 void Renderer::renderEntities( double alpha, Shader* shader, Matrices* mat, Matrices* shadowMat )
 {
-	shader->bind();
-
-	// Send directional light data.
-	if ( shader->usesLightDir() )
-	{
-		shader->sendLightDir( glm::normalize( glm::mat3( mat->getView() ) * lightDir ) );
-		shader->sendLightColor( lightColor );
-	}
-
-	// Reset the model matrix.
-	mat->loadIdentity();
-
-	// Only translation is required for terrain.
-	mat->translate( m->getPosition() );
-
-	// Send the precomputed modelview and normal (inverse-
-	// transpose modelview) matrices to GPU.
-	if ( shader->usesModelView() )
-		shader->sendModelView( mat->getModelView() );
-
-	if ( shader->usesNormal() )
-		shader->sendNormal( mat->getNormal() );
-
-	// Compute and send the shadow matrices if needed.
-	if ( shadowMat != 0 &&
-			shader->usesShadowMatrices() )
-	{
-		shadowMat->loadIdentity();
-		shadowMat->translate( m->getPosition() );
-		shader->sendShadowModelView( shadowMat->getModelView() );
-	}
-
-	m->draw();
-
-	Shader::unbind();
+	// TODO.
 }
 
 

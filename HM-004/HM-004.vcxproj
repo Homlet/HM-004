@@ -176,6 +176,8 @@
     <None Include="shader\shadow.prog" />
     <None Include="shader\shadow.vert" />
     <None Include="shader\terrain.prog" />
+    <None Include="shader\terrain.frag" />
+    <None Include="shader\terrain.vert" />
     <None Include="texture\block_dirt.tga" />
     <None Include="texture\block_dirt.xcf" />
     <None Include="texture\block_grass_side.tga" />

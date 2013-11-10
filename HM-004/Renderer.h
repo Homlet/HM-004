@@ -39,11 +39,11 @@ private:
 	glm::vec3  lightDir;
 	glm::vec3  lightColor;
 
-	Mesh* m;
-
 	void setupOGL( void );
 
 public:
+	float dist;
+
 	Renderer( GLFWwindow* window );
 
 	void render( double alpha );

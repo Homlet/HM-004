@@ -18,6 +18,30 @@ struct cube {
 };
 
 
+struct quad {
+	quad(
+		glm::vec3 p0,
+		glm::vec3 p1,
+		glm::vec3 p2,
+		glm::vec3 p3,
+		glm::vec3 n,
+		float w,
+		float h
+	) :
+		p0( p0 ),
+		p1( p1 ),
+		p2( p2 ),
+		p3( p3 ),
+		n( n ),
+		w( w ),
+		h( h )
+	{};
+
+	glm::vec3 p0, p1, p2, p3, n;
+	float w, h;
+};
+
+
 class Mesh {
 private:
 	GLuint vertexID;
@@ -67,7 +91,7 @@ public:
 	static void appendCube(
 		glm::vec3 position,
 		float size,
-		std::vector<vertex>*   v,
+		std::vector<vertex>* v,
 		std::vector<GLuint>* i
 	);
 
@@ -75,7 +99,13 @@ public:
 		glm::vec3 position,
 		float size,
 		cube faces,
-		std::vector<vertex>*   v,
+		std::vector<vertex>* v,
+		std::vector<GLuint>* i
+	);
+
+	static void appendQuad(
+		quad quad,
+		std::vector<vertex>* v,
 		std::vector<GLuint>* i
 	);
 

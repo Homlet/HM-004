@@ -87,8 +87,8 @@ Core::Core( void )
 	renderer = new Renderer( window );
 
 	// Dummy terrain.
-	//Terrain* terrain = new Terrain();
-	//renderer->addTerrain( (*terrain->chunks)[glm::ivec3( -16, -16, -16 )] );
+	Terrain* terrain = new Terrain();
+	renderer->addTerrain( (*terrain->chunks)[glm::ivec3( 0, 0, 0 )] );
 }
 
 
@@ -128,6 +128,12 @@ void Core::run( void )
 	while( !glfwWindowShouldClose( core->window ) )
 	{
 		glfwPollEvents();
+
+		if ( glfwGetKey( Core::getRenderer()->window, GLFW_KEY_F5 ) )
+		{
+			Terrain* terrain = new Terrain();
+			Core::getRenderer()->addTerrain( (*terrain->chunks)[glm::ivec3( 0, 0, 0 )] );
+		}
 
 		current_time = glfwGetTime();
 		accumulated_time += current_time - last_time;
