@@ -75,13 +75,35 @@ unsigned char* Texture::loadTGA( std::string url, int* width, int* height, int* 
 
 
 /*!
- * Creates a texture object and fills it with data from a png.
+ * Creates a texture object and fills it with data from a targa file.
  */
 Texture::Texture( std::string name, std::string url ) :
 	name( name )
 {
+	int width, height, depth;
+	unsigned char* data = loadTGA( url, &width, &height, &depth );
+
+	bufferData( data, width, height, depth );
+}
+
+
+/*!
+ * Creates a texture object using data.
+ */
+Texture::Texture( std::string name, unsigned char* data, int width, int height, int depth ) :
+	name( name )
+{
 	glGenTextures( 1, &ID );
 
+	bufferData( data, width, height, depth );
+}
+
+
+/*!
+ * Buffers image data to the texture object.
+ */
+void Texture::bufferData( unsigned char* data, int width, int height, int depth )
+{
 	bind();
 	{
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
@@ -89,15 +111,26 @@ Texture::Texture( std::string name, std::string url ) :
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 
-		int width, height, depth;
-		unsigned char* data = loadTGA( url, &width, &height, &depth );
+		GLenum format;
+		switch ( depth )
+		{
+		case 1:
+			format = GL_LUMINANCE;
+			break;
 
-		GLenum format = ( depth == 3 ) ? GL_RGB : GL_RGBA;
+		case 3:
+			format = GL_RGB;
+			break;
+
+		case 4:
+			format = GL_RGBA;
+			break;
+		}
 
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, &data[0] );
 		glGenerateMipmap( GL_TEXTURE_2D );
 		
-		std::cout << " w:" << width << " h:" << height << " d:" << depth << " f:" << format << std::endl;
+		std::cout << " w:" << width << " h:" << height << " d:" << depth << " f:" << format << "\n";
 	}
 	unbind();
 }

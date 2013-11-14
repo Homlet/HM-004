@@ -113,8 +113,8 @@ ShadowMap::ShadowMap( void ) :
 			GL_TEXTURE_2D,
 			0,
 			GL_DEPTH_COMPONENT16,
-			2048,
-			2048,
+			512,
+			512,
 			0,
 			GL_DEPTH_COMPONENT,
 			GL_FLOAT,
@@ -150,5 +150,5 @@ void ShadowMap::bind( void )
 {
 	glBindFramebuffer(  GL_FRAMEBUFFER,  bound = ID );
 	glBindRenderbuffer( GL_RENDERBUFFER, 0          );
-	glViewport( 0, 0, 2048, 2048 );
+	glViewport( 0, 0, 512, 512 );
 }

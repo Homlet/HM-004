@@ -5,6 +5,7 @@ out vec4 o_color;
 in vec3 f_pos;
 in vec3 f_tex;
 in vec3 f_normal;
+in float f_fog;
 
 uniform vec3 u_lightDir;
 uniform vec3 u_lightColor;
@@ -28,10 +29,14 @@ void main( void )
 
 	// Combined:
 	o_color = vec4(
-		specular + (
-			( ambient + diffuse ) *
-			u_lightColor *
-			texture( u_2D, f_tex.xy ).rgb
+		mix(
+			vec3( 0.0 ),
+			specular + (
+				( ambient + diffuse ) *
+				u_lightColor *
+				texture( u_2D, f_tex.xy ).rgb
+			),
+			f_fog
 		),
 		1.0
 	);

@@ -29,7 +29,7 @@ GLuint Shader::compileShader( std::string src, GLenum type )
 	std::vector<char> log( length );
 	glGetShaderInfoLog( id, length, 0, &log[0] );
 
-	std::cout << "    " << &log[0] << std::endl;
+	std::cout << "    " << &log[0] << "\n";
 
 	return ( result == GL_FALSE ) ? 0 : id;
 }
@@ -42,7 +42,7 @@ Shader::Shader( std::string name, std::string vert_src, std::string frag_src ) :
 	ID( glCreateProgram() ),
 	name( name )
 {
-	std::cout << "  Compiling shader " + name << std::endl;
+	std::cout << "  Compiling shader " + name + "\n";
 
 	// Compile vertex shader.
 	GLuint vert;

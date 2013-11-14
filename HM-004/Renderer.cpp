@@ -16,6 +16,8 @@
 #include "Chunk.h"
 #include "GUIElement.h"
 
+#include "font/consolas/stb_font_consolas_16_usascii.inl"
+
 
 void scroll( GLFWwindow* window, double x, double y )
 {
@@ -41,6 +43,29 @@ void Renderer::setupOGL( void )
 
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+	glMatrixMode( GL_PROJECTION );
+	glOrtho( 0, WIN_W, 0, WIN_H, -1, 1 );
+	glMatrixMode( GL_MODELVIEW );
+
+	unsigned char fontpixels[STB_SOMEFONT_BITMAP_HEIGHT][STB_SOMEFONT_BITMAP_WIDTH];
+	fontdata = new stb_fontchar[STB_SOMEFONT_NUM_CHARS];
+    STB_SOMEFONT_CREATE( fontdata, fontpixels, STB_SOMEFONT_BITMAP_HEIGHT );
+
+	unsigned char* fontchars = new unsigned char[STB_SOMEFONT_BITMAP_HEIGHT*STB_SOMEFONT_BITMAP_WIDTH];
+	for ( int i = 0; i < STB_SOMEFONT_BITMAP_HEIGHT; i++ )
+		for ( int j = 0; j < STB_SOMEFONT_BITMAP_WIDTH; j++ )
+		{
+			fontchars[i*STB_SOMEFONT_BITMAP_HEIGHT+j] = fontpixels[i][j];
+		}
+
+	font = new Texture(
+		"Consolas_16",
+		fontchars,
+		STB_SOMEFONT_BITMAP_WIDTH,
+		STB_SOMEFONT_BITMAP_HEIGHT,
+		1
+	);
 }
 
 
@@ -57,8 +82,9 @@ Renderer::Renderer( GLFWwindow* window ) :
 	 shaderCache( new ResourceCache<Shader>()  ),
 	textureCache( new ResourceCache<Texture>() ),
 	matrices( new Matrices() ),
+	       block( textureCache->getResource( "texture/block_sand.tga" ) ),
 //	 shaderEntity( shaderCache->getResource( "shader/entity.prog"  ) ),
-	shaderTerrain( shaderCache->getResource( "shader/terrain.prog" ) ),
+	shaderTerrain( shaderCache->getResource( "shader/test_phong.prog" ) ),
 //	    shaderGUI( shaderCache->getResource( "shader/gui.prog"     ) ),
 	 shaderShadow( shaderCache->getResource( "shader/shadow.prog"  ) ),
 	shadow( new ShadowMap() ),
@@ -69,7 +95,7 @@ Renderer::Renderer( GLFWwindow* window ) :
 		80,
 		(float) WIN_W / WIN_H,
 		0.1,
-		1000
+		128
 	);
 	matrices->lookAt(
 		glm::vec3( 0.0, 0.0, 43.0 ),
@@ -115,9 +141,6 @@ Renderer::Renderer( GLFWwindow* window ) :
 		shaderShadow->sendProjection( shadowMatrices->getProjection() );
 
 	setupOGL();
-
-	// Dummy texture.
-	textureCache->getResource( "texture/block_sand.tga" )->bind();
 
 	glfwSetScrollCallback( window, scroll );
 	dist = 46.0f;
@@ -177,6 +200,7 @@ void Renderer::render( double alpha )
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	glEnable( GL_CULL_FACE );
 
+	block->bind();
 	renderTerrain(         shaderTerrain, matrices, shadowMatrices );
 	renderEntities( alpha, shaderEntity,  matrices, shadowMatrices ); // TODO: switch shader back.
 	renderGUI(             shaderGUI,     matrices );
@@ -251,6 +275,55 @@ void Renderer::renderTerrain( Shader* shader, Matrices* mat, Matrices* shadowMat
 void Renderer::renderGUI( Shader* shader, Matrices* mat )
 {
 	// TODO.
+}
+
+
+/*!
+ * Draw a progress bar to the back buffer, via the fixed-function pipeline.
+ */
+void Renderer::renderProgress( std::string name, float progress, glm::vec4 color )
+{
+	Shader::unbind();
+
+	//renderString( name, glm::vec2( 5, 20 ) );
+
+	glDisable( GL_TEXTURE_2D );
+	glBegin( GL_QUADS );
+	{
+		glColor4f( color.r, color.g, color.b, color.a );
+		glVertex2f( 0, 0 );
+		glVertex2f( WIN_W * progress, 0  );
+		glVertex2f( WIN_W * progress, 15 );
+		glVertex2f( 0, 15 );
+	}
+	glEnd();
+	glEnable( GL_TEXTURE_2D );
+}
+
+
+/*!
+ * Draw a string to the back buffer, via the fixed-function pipeline.
+ */
+void Renderer::renderString( std::string name, glm::vec2 pos )
+{
+	Shader::unbind();
+
+	font->bind();
+
+	glBegin( GL_QUADS );
+	glColor4f( 1.0, 1.0, 1.0, 1.0 );
+	for ( int c = 0; c < name.size(); c++ )
+	{
+		stb_fontchar *cd = &fontdata[name[c]-STB_SOMEFONT_FIRST_CHAR];
+		pos.x += cd->x1 + 2;
+		glTexCoord2f( cd->s0, cd->t0 ); glVertex2f( pos.x + cd->x0, pos.y + cd->y0 );
+		glTexCoord2f( cd->s1, cd->t0 ); glVertex2f( pos.x + cd->x1, pos.y + cd->y0 );
+		glTexCoord2f( cd->s1, cd->t1 ); glVertex2f( pos.x + cd->x1, pos.y + cd->y1 );
+		glTexCoord2f( cd->s0, cd->t1 ); glVertex2f( pos.x + cd->x0, pos.y + cd->y1 );
+	}
+	glEnd();
+
+	Texture::unbind();
 }
 
 

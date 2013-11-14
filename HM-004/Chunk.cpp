@@ -2,15 +2,17 @@
 #include "Chunk.h"
 
 #include "Mesh.h"
+#include "Terrain.h"
 
 
-Chunk::Chunk( glm::ivec3 position, int size ) :
+Chunk::Chunk( glm::ivec3 position, int size, Terrain* terrain ) :
+	terrain( terrain ),
 	changed( true ),
 	position( position ),
+	positionAbs( position * size ),
 	size( size ),
-	id( (int)( glfwGetTime() * 10000 ) )
+	id( (int)( glfwGetTime() * 100000 ) )
 {
-	glm::vec2 seed = glm::vec2( id, id % 1000 );
 	blocks = new Block**[size];
 	for ( int i = 0; i < size; i++ )
 	{
@@ -20,7 +22,11 @@ Chunk::Chunk( glm::ivec3 position, int size ) :
 			blocks[i][j] = new Block[size];
 			for ( int k = 0; k < size; k++ )
 			{
-				if ( j < ( glm::simplex( glm::vec2( i / 100.0, k / 100.0 ) + seed ) + 1 ) * size / 2 )
+				int x = i + position.x * size;
+				int y = j + position.y * size;
+				int z = k + position.z * size;
+
+				if ( y < ( glm::simplex( glm::vec2( x / 100.0, z / 100.0 ) ) + 1 ) * 64 )
 					blocks[i][j][k].type = 1;
 				else
 					blocks[i][j][k].type = 0;
@@ -30,12 +36,27 @@ Chunk::Chunk( glm::ivec3 position, int size ) :
 }
 
 
+/*!
+ * Returns the block type at this position in the chunk.
+ */
+Block Chunk::getBlockAt( glm::ivec3 pos )
+{
+	return blocks[pos.x][pos.y][pos.z];
+}
+
+
+/*!
+ * Returns the unique integer ID for this chunk.
+ */
 int Chunk::getID( void )
 {
 	return id;
 }
 
 
+/*!
+ * Returns a pointer to the mesh for this chunk.
+ */
 Mesh* Chunk::getMesh( void )
 {
 	if ( changed )
@@ -48,6 +69,9 @@ Mesh* Chunk::getMesh( void )
 }
 
 
+/*!
+ * Generates a mesh for the chunk using a greedy alogrithm.
+ */
 Mesh* Chunk::generateMesh( void )
 {
 	std::vector<vertex> vertices;
@@ -75,8 +99,16 @@ Mesh* Chunk::generateMesh( void )
 			for ( p[u] = 0; p[u] < size; p[u]++ )
 			for ( p[v] = 0; p[v] < size; p[v]++ )
 			{
-				char near = ( p[d] > 0    ? blocks[p[0]-q[0]][p[1]-q[1]][p[2]-q[2]].type : 0 );
-				char far  = ( p[d] < size ? blocks[p[0]     ][p[1]     ][p[2]     ].type : 0 );
+				char near = (
+					p[d] == 0 ?
+					terrain->getBlockAt( p - q + positionAbs ).type :
+					blocks[p[0]-q[0]][p[1]-q[1]][p[2]-q[2]].type
+				);
+				char far = (
+					p[d] == size ?
+					terrain->getBlockAt( p + positionAbs ).type :
+					blocks[p[0]][p[1]][p[2]].type
+				);
 				type[p[u]][p[v]] = ( near != 0 ) ^ ( far != 0 ) ? near | far : 0;
 				face[p[u]][p[v]] = ( near != 0 );
 			}
@@ -88,6 +120,7 @@ Mesh* Chunk::generateMesh( void )
 				char t;
 				if ( t = type[i][j] )
 				{
+					// Whether the quad faces backwards along the axis.
 					bool f = face[i][j];
 
 					// Compute width and height of quad.
@@ -106,10 +139,10 @@ Mesh* Chunk::generateMesh( void )
 					glm::vec3 hd; hd[f?v:u] = (float)( f ? h : w );
 					Mesh::appendQuad(
 						quad(
-							glm::vec3( size * position ) + glm::vec3( p ),
-							glm::vec3( size * position ) + glm::vec3( p[0]+wd[0]      , p[1]+wd[1]      , p[2]+wd[2]       ),
-							glm::vec3( size * position ) + glm::vec3( p[0]+wd[0]+hd[0], p[1]+wd[1]+hd[1], p[2]+wd[2]+hd[2] ),
-							glm::vec3( size * position ) + glm::vec3( p[0]      +hd[0], p[1]      +hd[1], p[2]      +hd[2] ),
+							glm::vec3( positionAbs ) + glm::vec3( p ),
+							glm::vec3( positionAbs ) + glm::vec3( p[0]+wd[0]      , p[1]+wd[1]      , p[2]+wd[2]       ),
+							glm::vec3( positionAbs ) + glm::vec3( p[0]+wd[0]+hd[0], p[1]+wd[1]+hd[1], p[2]+wd[2]+hd[2] ),
+							glm::vec3( positionAbs ) + glm::vec3( p[0]      +hd[0], p[1]      +hd[1], p[2]      +hd[2] ),
 							glm::vec3( f ? q : -q ),
 							(float)( f ? w : h ),
 							(float)( f ? h : w )
@@ -123,8 +156,10 @@ Mesh* Chunk::generateMesh( void )
 					for ( int k = j; k < j + h; k++ )
 						type[l][k] = 0;
 
+					// Advance along by width of quad.
 					i += w;
 				} else
+					// Advance along by one.
 					i++;
 			}
 		}

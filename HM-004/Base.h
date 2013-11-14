@@ -42,5 +42,7 @@ private:
 
 public:
 	static void run( void );
+	static void cheapUpdate( void );
+	static void cheapProgress( std::string name, float progress = 0 );
 	static Renderer* getRenderer( void );
 };

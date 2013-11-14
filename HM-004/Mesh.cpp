@@ -34,7 +34,10 @@ Mesh::Mesh( std::vector<vertex> vertices, std::vector<GLuint> indices, GLenum po
 				&indices[0],
 				GL_STATIC_DRAW
 			);
-		}
+
+			empty = false;
+		} else
+			empty = true;
 		
 		glEnableVertexAttribArray( 0 );
 		glEnableVertexAttribArray( 1 );
@@ -71,6 +74,36 @@ Mesh::Mesh( std::vector<vertex> vertices, std::vector<GLuint> indices, GLenum po
 
 
 /*!
+ * Rebuffers data without creating a new VBO.
+ */
+void Mesh::rebuffer( std::vector<vertex> vertices, std::vector<GLuint> indices, GLenum poly_mode )
+{
+	this->poly_mode = poly_mode;
+	count = (int) indices.size();
+
+	vao->bind();
+	{
+		bind();
+		if ( count > 0 )
+		{
+			glBufferData(
+				GL_ARRAY_BUFFER,
+				sizeof ( vertex ) * vertices.size(),
+				&vertices[0],
+				GL_STATIC_DRAW
+			);
+			glBufferData(
+				GL_ELEMENT_ARRAY_BUFFER,
+				sizeof ( GLuint ) * indices.size(),
+				&indices[0],
+				GL_STATIC_DRAW
+			);
+		}
+	}
+}
+
+
+/*!
  * Binds the data and index buffers associated with this object.
  */
 void Mesh::bind( void )
@@ -95,11 +128,14 @@ void Mesh::unbind( void )
  */
 void Mesh::draw( void )
 {
-	vao->bind();
+	if ( !empty )
+	{
+		vao->bind();
 
-	glDrawElements( poly_mode, count, GL_UNSIGNED_INT, (GLvoid*) 0 );
+		glDrawElements( poly_mode, count, GL_UNSIGNED_INT, (GLvoid*) 0 );
 
-	vao->unbind();
+		vao->unbind();
+	}
 }
 
 

@@ -19,6 +19,20 @@ private:
 
 public:
 	Texture( std::string name, std::string url );
+	Texture(
+		std::string name,
+		unsigned char* data,
+		int width,
+		int height,
+		int depth
+	);
+
+	void bufferData( 
+		unsigned char* data,
+		int width,
+		int height,
+		int depth
+	);
 
 	       void   bind( void );
 	static void unbind( void );

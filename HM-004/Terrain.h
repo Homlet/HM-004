@@ -2,6 +2,8 @@
 
 
 class Chunk;
+class Renderer;
+struct Block;
 
 
 class ivec3_compare {
@@ -16,8 +18,17 @@ public:
 
 
 class Terrain {
+private:
+	std::map<glm::ivec3, Chunk*, ivec3_compare> chunks;
+	int csize;
+
+	Block* blockEmpty;
+
 public:
 	Terrain( void );
 
-	std::map<glm::ivec3, Chunk*, ivec3_compare>* chunks;
+	void addToRenderer( Renderer* renderer );
+
+	Chunk* getChunkAt( glm::ivec3 pos );
+	Block  getBlockAt( glm::ivec3 pos );
 };

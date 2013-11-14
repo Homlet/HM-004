@@ -16,6 +16,8 @@ class Entity;
 class Chunk;
 class GUIElement;
 
+struct stb_fontchar;
+
 
 class Renderer {
 private:
@@ -27,6 +29,10 @@ private:
 	ResourceCache<Texture>* textureCache;
 
 	Matrices* matrices;
+
+	Texture*      block;
+	Texture*      font;
+	stb_fontchar* fontdata;
 
 	Shader* shaderEntity;
 	Shader* shaderTerrain;
@@ -62,6 +68,15 @@ public:
 	void renderGUI(
 		Shader* shader,
 		Matrices* mat
+	);
+	void renderProgress(
+		std::string name,
+		float progress,
+		glm::vec4 color = glm::vec4( 0.0, 0.7, 0.1, 1.0 )
+	);
+	void renderString(
+		std::string name,
+		glm::vec2 pos
 	);
 
 	void  addEntity( Entity* entity   );

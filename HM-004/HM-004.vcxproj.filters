@@ -55,6 +55,9 @@
     <Filter Include="Source Files\State\GUI">
       <UniqueIdentifier>{06b6509c-d37b-4a34-9f98-68d535847ba9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\font">
+      <UniqueIdentifier>{5d9ef6f2-1b97-4886-89ad-e4e0324c71e5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base.h">
@@ -247,5 +250,277 @@
     <None Include="shader\terrain.vert">
       <Filter>Resource Files\shader</Filter>
     </None>
+    <None Include="font\consolas\stb_font_consolas_9_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_10_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_11_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_12_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_13_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_14_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_15_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_16_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_17_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_18_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_19_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_20_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_21_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_22_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_23_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_24_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_25_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_26_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_27_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_28_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_29_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_30_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_31_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_32_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_33_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_34_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_35_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_36_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_37_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_38_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_39_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_40_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_41_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_42_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_43_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_44_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_45_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_46_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_47_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_48_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_49_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_50_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_6_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_7_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+    <None Include="font\consolas\stb_font_consolas_8_usascii.inl">
+      <Filter>Resource Files\font</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="font\consolas\stb_font_consolas_10_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_11_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_12_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_13_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_14_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_15_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_16_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_17_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_18_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_19_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_20_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_21_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_22_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_23_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_24_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_25_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_26_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_27_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_28_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_29_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_30_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_31_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_32_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_33_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_34_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_35_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_36_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_37_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_38_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_39_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_40_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_41_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_42_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_43_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_44_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_45_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_46_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_47_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_48_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_49_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_50_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_6_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_7_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_8_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
+    <Image Include="font\consolas\stb_font_consolas_9_usascii.png">
+      <Filter>Resource Files\font</Filter>
+    </Image>
   </ItemGroup>
 </Project>

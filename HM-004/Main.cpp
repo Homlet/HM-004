@@ -44,7 +44,7 @@ Core::Core( void )
 	if ( !glfwInit() )
 		throw std::exception( "GLFW failed to initialise." );
 	else
-		std::cout << "GLFW successfully initialised." << std::endl;
+		std::cout << "GLFW successfully initialised.\n";
 
 	// Open window.
 	glfwWindowHint( GLFW_RED_BITS,   WIN_RED_BITS   );
@@ -57,7 +57,7 @@ Core::Core( void )
 
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
-	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
+	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE );
 
 	window = glfwCreateWindow( WIN_W, WIN_H, WIN_TITLE, NULL, NULL );
 
@@ -69,7 +69,7 @@ Core::Core( void )
 
 		throw std::exception( "Window failed to open." );
 	} else
-		std::cout << "Window opened successfully." << std::endl;
+		std::cout << "Window opened successfully.\n";
 
 	glfwMakeContextCurrent( window );
 
@@ -81,14 +81,10 @@ Core::Core( void )
 		glfwTerminate();
 		throw std::exception( "GLEW failed to initalise." );
 	} else
-		std::cout << "GLEW successfully initialised.\n" << std::endl;
+		std::cout << "GLEW successfully initialised.\n\n";
 
 	// Initialise renderer.
 	renderer = new Renderer( window );
-
-	// Dummy terrain.
-	Terrain* terrain = new Terrain();
-	renderer->addTerrain( (*terrain->chunks)[glm::ivec3( 0, 0, 0 )] );
 }
 
 
@@ -118,6 +114,10 @@ void Core::run( void )
 {
 	Core* core = getInstance();
 
+	// Dummy terrain.
+	Terrain terrain;
+	terrain.addToRenderer( Core::getRenderer() );
+
 	      double  t = 0.0;
 	const double dt = TME_TICK;
 
@@ -125,15 +125,9 @@ void Core::run( void )
 	double last_time        = 0.0;
 	double accumulated_time = 0.0;
 
-	while( !glfwWindowShouldClose( core->window ) )
+	while ( !glfwWindowShouldClose( core->window ) )
 	{
 		glfwPollEvents();
-
-		if ( glfwGetKey( Core::getRenderer()->window, GLFW_KEY_F5 ) )
-		{
-			Terrain* terrain = new Terrain();
-			Core::getRenderer()->addTerrain( (*terrain->chunks)[glm::ivec3( 0, 0, 0 )] );
-		}
 
 		current_time = glfwGetTime();
 		accumulated_time += current_time - last_time;
@@ -154,6 +148,51 @@ void Core::run( void )
 
 	glfwDestroyWindow( core->window );
 	glfwTerminate();
+}
+
+
+/*!
+ * Allows intensive operations to prevent the window becoming unresponsive.
+ */
+void Core::cheapUpdate( void )
+{
+	glfwPollEvents();
+
+	Core* core = getInstance();
+
+	if ( glfwWindowShouldClose( core->window ) )
+	{
+		glfwDestroyWindow( core->window );
+		glfwTerminate();
+
+		exit( EXIT_SUCCESS );
+	}
+}
+
+
+/*!
+ * Allows intensive operations to prevent the window becoming unresponsive.
+ * Draws a progress bar using OpenGL direct mode.
+ */
+void Core::cheapProgress( std::string name, float progress )
+{
+	glfwPollEvents();
+
+	Core* core = getInstance();
+
+	if ( glfwWindowShouldClose( core->window ) )
+	{
+		glfwDestroyWindow( core->window );
+		glfwTerminate();
+
+		exit( EXIT_SUCCESS );
+	}
+
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+	Core::getRenderer()->renderProgress( name, progress );
+
+	glfwSwapBuffers( core->window );
 }
 
 
@@ -194,7 +233,7 @@ bool readTextFile( std::string url, std::string& output )
 		return true;
 	} else
 	{
-		std::cout << "Unable to open file: " + url << std::endl;
+		std::cout << "Unable to open file: " + url + "\n";
 
 		return false;
 	}

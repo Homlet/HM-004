@@ -48,6 +48,7 @@ private:
 	GLuint indexID;
 	GLenum poly_mode;
 	int count;
+	bool empty;
 
 	VAO* vao;
 
@@ -61,6 +62,12 @@ protected:
 
 public:
 	Mesh(
+		std::vector<vertex> vertices,
+		std::vector<GLuint> indices,
+		GLenum poly_mode
+	);
+
+	void rebuffer(
 		std::vector<vertex> vertices,
 		std::vector<GLuint> indices,
 		GLenum poly_mode
