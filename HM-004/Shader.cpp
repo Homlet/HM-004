@@ -87,6 +87,7 @@ Shader::Shader( std::string name, std::string vert_src, std::string frag_src ) :
 	// Setup uniforms.
 	bind();
 	{
+		uniformLoc_M          = glGetUniformLocation( ID, "u_M"          );
 		uniformLoc_MV         = glGetUniformLocation( ID, "u_MV"         );
 		uniformLoc_P          = glGetUniformLocation( ID, "u_P"          );
 		uniformLoc_N          = glGetUniformLocation( ID, "u_N"          );
@@ -140,15 +141,6 @@ bool Shader::isBound( void )
 
 
 /*!
- * Returns true if this shader uses the modelview matrix uniform.
- */
-bool Shader::usesModelView( void )
-{
-	return uniformLoc_MV != -1;
-}
-
-
-/*!
  * Macro to bind shaders when sending uniforms, then unbind only if they weren't
  * bound previously.
  */
@@ -160,6 +152,33 @@ bool Shader::usesModelView( void )
 						}                          \
 						a                          \
 						if ( !wasBound ) unbind();
+
+
+/*!
+ * Returns true if this shader uses the model matrix uniform.
+ */
+bool Shader::usesModel( void )
+{
+	return uniformLoc_M != -1;
+}
+
+
+/*!
+ * Send model matrix to the GPU as a uniform.
+ */
+void Shader::sendModel( glm::mat4 m )
+{
+	BIND_LOCK( glUniformMatrix4fv( uniformLoc_M, 1, false, glm::value_ptr( m ) ); )
+}
+
+
+/*!
+ * Returns true if this shader uses the modelview matrix uniform.
+ */
+bool Shader::usesModelView( void )
+{
+	return uniformLoc_MV != -1;
+}
 
 
 /*!

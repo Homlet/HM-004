@@ -20,6 +20,7 @@ private:
 	bool compiled;
 
 	GLint uniformLoc_MV,
+		  uniformLoc_M,
 		  uniformLoc_P,
 		  uniformLoc_N,
 		  uniformLoc_lightDir,
@@ -35,6 +36,9 @@ public:
 	       void   bind( void );
 	static void unbind( void );
 	      bool isBound( void );
+	
+	bool  usesModel( void );
+	void  sendModel( glm::mat4 m );
 	
 	bool  usesModelView( void );
 	void  sendModelView( glm::mat4 mv );

@@ -1,6 +1,10 @@
 #pragma once
 
 
+#include "ft2build.h"
+#include FT_FREETYPE_H
+
+
 template <typename T>
 class ResourceCache;
 
@@ -8,6 +12,7 @@ class Matrices;
 class Shader;
 class ShadowMap;
 class Texture;
+class Font;
 
 class     Mesh;
 class LerpMesh;
@@ -16,11 +21,11 @@ class Entity;
 class Chunk;
 class GUIElement;
 
-struct stb_fontchar;
-
 
 class Renderer {
 private:
+	friend void scroll( GLFWwindow* window, double x, double y );
+
 	std::map<int, LerpMesh*>* entities;
 	std::map<int,     Mesh*>* terrain;
 	std::map<int,     Mesh*>* gui;
@@ -28,28 +33,33 @@ private:
 	ResourceCache<Shader>*   shaderCache;
 	ResourceCache<Texture>* textureCache;
 
-	Matrices* matrices;
+	FT_Library ft;
+	FT_Face    ft_consola;
 
-	Texture*      block;
-	Texture*      font;
-	stb_fontchar* fontdata;
+	// TEMP DEBUG STUFF ----------¬
+	float dist;
+	
+	Texture* textureTerrain;
+	// Mesh* torus;
+	// ---------------------------'
 
 	Shader* shaderEntity;
 	Shader* shaderTerrain;
 	Shader* shaderGUI;
 	Shader* shaderShadow;
-
-	ShadowMap* shadow;
+	Shader* shaderFont;
+	
+	Matrices* matrices;
 	Matrices*  shadowMatrices;
+	ShadowMap* shadowMap;
 
-	glm::vec3  lightDir;
-	glm::vec3  lightColor;
+	glm::vec3 lightDir;
+	glm::vec3 lightColor;
 
 	void setupOGL( void );
+	void setupFT( void );
 
 public:
-	float dist;
-
 	Renderer( GLFWwindow* window );
 
 	void render( double alpha );
@@ -75,7 +85,7 @@ public:
 		glm::vec4 color = glm::vec4( 0.0, 0.7, 0.1, 1.0 )
 	);
 	void renderString(
-		std::string name,
+		std::string text,
 		glm::vec2 pos
 	);
 

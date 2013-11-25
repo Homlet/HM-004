@@ -10,13 +10,12 @@
 #include "Shader.h"
 #include "FBO.h"
 #include "Texture.h"
+#include "Font.h"
 #include "Mesh.h"
 
 #include "Entity.h"
 #include "Chunk.h"
 #include "GUIElement.h"
-
-#include "font/consolas/stb_font_consolas_16_usascii.inl"
 
 
 void scroll( GLFWwindow* window, double x, double y )
@@ -31,6 +30,7 @@ void scroll( GLFWwindow* window, double x, double y )
 void Renderer::setupOGL( void )
 {
 	glEnable( GL_TEXTURE_2D );
+	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
 	glEnable( GL_PRIMITIVE_RESTART );
 	glPrimitiveRestartIndex( 0xffffffff );
@@ -47,25 +47,23 @@ void Renderer::setupOGL( void )
 	glMatrixMode( GL_PROJECTION );
 	glOrtho( 0, WIN_W, 0, WIN_H, -1, 1 );
 	glMatrixMode( GL_MODELVIEW );
+}
 
-	unsigned char fontpixels[STB_SOMEFONT_BITMAP_HEIGHT][STB_SOMEFONT_BITMAP_WIDTH];
-	fontdata = new stb_fontchar[STB_SOMEFONT_NUM_CHARS];
-    STB_SOMEFONT_CREATE( fontdata, fontpixels, STB_SOMEFONT_BITMAP_HEIGHT );
 
-	unsigned char* fontchars = new unsigned char[STB_SOMEFONT_BITMAP_HEIGHT*STB_SOMEFONT_BITMAP_WIDTH];
-	for ( int i = 0; i < STB_SOMEFONT_BITMAP_HEIGHT; i++ )
-		for ( int j = 0; j < STB_SOMEFONT_BITMAP_WIDTH; j++ )
-		{
-			fontchars[i*STB_SOMEFONT_BITMAP_HEIGHT+j] = fontpixels[i][j];
-		}
+/*!
+ * Sets up the FreeType font renderer.
+ */
+void Renderer::setupFT( void )
+{
+	std::cout << "Initialising FreeType.\n";
+	if ( FT_Init_FreeType( &ft ) )
+		throw std::exception( "An error occurred during loading FreeType 2." );
 
-	font = new Texture(
-		"Consolas_16",
-		fontchars,
-		STB_SOMEFONT_BITMAP_WIDTH,
-		STB_SOMEFONT_BITMAP_HEIGHT,
-		1
-	);
+	std::cout << "Loading font Consola.\n\n";
+	if ( FT_New_Face( ft, "font/ConsolaMono.ttf", 0, &ft_consola ) )
+		throw std::exception( "An error occurred during loading Consola font." );
+
+	FT_Set_Pixel_Sizes( ft_consola, 0, 16 );
 }
 
 
@@ -81,14 +79,15 @@ Renderer::Renderer( GLFWwindow* window ) :
 	     gui( new std::map<int,     Mesh*>() ),
 	 shaderCache( new ResourceCache<Shader>()  ),
 	textureCache( new ResourceCache<Texture>() ),
-	matrices( new Matrices() ),
-	       block( textureCache->getResource( "texture/block_sand.tga" ) ),
-//	 shaderEntity( shaderCache->getResource( "shader/entity.prog"  ) ),
+	textureTerrain( textureCache->getResource( "texture/block_sand.tga" ) ),
+//	 shaderEntity( shaderCache->getResource( "shader/entity.prog"     ) ),
 	shaderTerrain( shaderCache->getResource( "shader/test_phong.prog" ) ),
-//	    shaderGUI( shaderCache->getResource( "shader/gui.prog"     ) ),
-	 shaderShadow( shaderCache->getResource( "shader/shadow.prog"  ) ),
-	shadow( new ShadowMap() ),
-	shadowMatrices( new Matrices() )
+//	    shaderGUI( shaderCache->getResource( "shader/gui.prog"        ) ),
+	 shaderShadow( shaderCache->getResource( "shader/shadow.prog"     ) ),
+	   shaderFont( shaderCache->getResource( "shader/font.prog"       ) ),
+	shadowMatrices( new Matrices()  ),
+	      matrices( new Matrices()  ),
+	     shadowMap( new ShadowMap() )
 {
 	// Setup matrices.
 	matrices->setProjection(
@@ -134,16 +133,17 @@ Renderer::Renderer( GLFWwindow* window ) :
 	if ( shaderTerrain->usesShadowMatrices() )
 		shaderTerrain->sendShadowProjection( shadowBias * shadowMatrices->getProjection() );
 
-	/* TODO: if ( shaderGUI->usesProjection() )
-		shaderGUI->sendProjection( matrices->getProjection() ); */
-
 	if ( shaderShadow->usesProjection() )
 		shaderShadow->sendProjection( shadowMatrices->getProjection() );
 
 	setupOGL();
+	setupFT();
 
+	// TEMP DEBUG STUFF -----------------------------------------------------------------------¬
 	glfwSetScrollCallback( window, scroll );
 	dist = 46.0f;
+
+	// torus = Mesh::createTorus( glm::vec3( 0.0 ), glm::vec3( 10.0, 10.0, 10.0 ), 8, 1, 4 );
 }
 
 
@@ -157,7 +157,7 @@ void Renderer::render( double alpha )
 
 	my = glm::clamp<double>( WIN_H - my, 0.1, WIN_H );
 
-	if ( glfwGetMouseButton( window, 0 ) )
+	if ( glfwGetMouseButton( window, GLFW_MOUSE_BUTTON_LEFT ) )
 	{
 		matrices->lookAt(
 			glm::vec3(
@@ -168,7 +168,7 @@ void Renderer::render( double alpha )
 			glm::vec3( 64.0, 64.0, 64.0 ),
 			glm::vec3( 0.0, 1.0, 0.0 )
 		);
-	} else if( glfwGetMouseButton( window, 1 ) )
+	} else if ( glfwGetMouseButton( window, GLFW_MOUSE_BUTTON_RIGHT ) )
 	{
 		lightDir = glm::vec3(
 			glm::cos( mx / 200 ) * glm::sin( my / 200 ),
@@ -184,7 +184,7 @@ void Renderer::render( double alpha )
 		glm::vec3( 0.0, 1.0, 0.0 )
 	);
 
-	shadow->bind();
+	shadowMap->bind();
 
 	glClear( GL_DEPTH_BUFFER_BIT );
 	glDisable( GL_CULL_FACE );
@@ -195,14 +195,14 @@ void Renderer::render( double alpha )
 	FBO::unbind();
 	
 	// Render final scene using the shadow matrices to cast shadows.
-	shadow->bindTexture();
+	shadowMap->bindTexture();
 
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	glEnable( GL_CULL_FACE );
 
-	block->bind();
+	textureTerrain->bind();
 	renderTerrain(         shaderTerrain, matrices, shadowMatrices );
-	renderEntities( alpha, shaderEntity,  matrices, shadowMatrices ); // TODO: switch shader back.
+	renderEntities( alpha, shaderTerrain, matrices, shadowMatrices ); // TODO: switch shader back.
 	renderGUI(             shaderGUI,     matrices );
 
 	FBO::unbindTexture();
@@ -216,7 +216,41 @@ void Renderer::render( double alpha )
  */
 void Renderer::renderEntities( double alpha, Shader* shader, Matrices* mat, Matrices* shadowMat )
 {
-	// TODO.
+	/*shader->bind();
+
+	// Send directional light data.
+	if ( shader->usesLightDir() )
+	{
+		shader->sendLightDir( glm::normalize( glm::mat3( mat->getView() ) * lightDir ) );
+		shader->sendLightColor( lightColor );
+	}
+	
+	// Reset the model matrix.
+	mat->loadIdentity();
+
+	// Only translation is required for terrain.
+	mat->translate( torus->getPosition() );
+
+	// Send the precomputed modelview and normal (inverse-
+	// transpose modelview) matrices to GPU.
+	if ( shader->usesModelView() )
+		shader->sendModelView( mat->getModelView() );
+
+	if ( shader->usesNormal() )
+		shader->sendNormal( mat->getNormal() );
+
+	// Compute and send the shadow matrices if needed.
+	if ( shadowMat != 0 &&
+			shader->usesShadowMatrices() )
+	{
+		shadowMat->loadIdentity();
+		shadowMat->translate( torus->getPosition() );
+		shader->sendShadowModelView( shadowMat->getModelView() );
+	}
+
+	torus->draw();
+
+	Shader::unbind(); TODO: actual entity renderer */
 }
 
 
@@ -285,7 +319,7 @@ void Renderer::renderProgress( std::string name, float progress, glm::vec4 color
 {
 	Shader::unbind();
 
-	//renderString( name, glm::vec2( 5, 20 ) );
+	renderString( name, glm::vec2( 5, 20 ) );
 
 	glDisable( GL_TEXTURE_2D );
 	glBegin( GL_QUADS );
@@ -304,26 +338,28 @@ void Renderer::renderProgress( std::string name, float progress, glm::vec4 color
 /*!
  * Draw a string to the back buffer, via the fixed-function pipeline.
  */
-void Renderer::renderString( std::string name, glm::vec2 pos )
+void Renderer::renderString( std::string text, glm::vec2 pos )
 {
-	Shader::unbind();
-
-	font->bind();
-
-	glBegin( GL_QUADS );
-	glColor4f( 1.0, 1.0, 1.0, 1.0 );
-	for ( int c = 0; c < name.size(); c++ )
+	FT_GlyphSlot g = ft_consola->glyph;
+	
+	for ( int i = 0; i < text.size(); i++ )
 	{
-		stb_fontchar *cd = &fontdata[name[c]-STB_SOMEFONT_FIRST_CHAR];
-		pos.x += cd->x1 + 2;
-		glTexCoord2f( cd->s0, cd->t0 ); glVertex2f( pos.x + cd->x0, pos.y + cd->y0 );
-		glTexCoord2f( cd->s1, cd->t0 ); glVertex2f( pos.x + cd->x1, pos.y + cd->y0 );
-		glTexCoord2f( cd->s1, cd->t1 ); glVertex2f( pos.x + cd->x1, pos.y + cd->y1 );
-		glTexCoord2f( cd->s0, cd->t1 ); glVertex2f( pos.x + cd->x0, pos.y + cd->y1 );
-	}
-	glEnd();
+		FT_UInt glyph_index = FT_Get_Char_Index( ft_consola, text.at( i ) );
+		FT_Load_Glyph( ft_consola, glyph_index, FT_LOAD_DEFAULT );
+		FT_Render_Glyph( g, FT_RENDER_MODE_NORMAL );
 
-	Texture::unbind();
+		glRasterPos2f( pos.x, pos.y );
+		pos.x += g->advance.x / 64.0f;
+		pos.y += g->advance.y / 64.0f;
+
+		unsigned char* data = new unsigned char[g->bitmap.width*g->bitmap.rows];
+		int j = 0;
+		for ( int y = g->bitmap.rows - 1; y >= 0; y-- )
+			for ( int x = 0; x < g->bitmap.width; x++ )
+				data[j++] = g->bitmap.buffer[g->bitmap.width*y+x];
+
+		glDrawPixels( g->bitmap.width, g->bitmap.rows, GL_LUMINANCE, GL_UNSIGNED_BYTE, data );
+	}
 }
 
 

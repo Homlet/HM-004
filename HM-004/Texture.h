@@ -24,14 +24,16 @@ public:
 		unsigned char* data,
 		int width,
 		int height,
-		int depth
+		GLenum format_inner,
+		GLenum format_outer
 	);
 
 	void bufferData( 
 		unsigned char* data,
 		int width,
 		int height,
-		int depth
+		GLenum format_inner,
+		GLenum format_outer
 	);
 
 	       void   bind( void );
