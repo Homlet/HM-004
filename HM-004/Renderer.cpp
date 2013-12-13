@@ -10,12 +10,16 @@
 #include "Shader.h"
 #include "FBO.h"
 #include "Texture.h"
-#include "Font.h"
 #include "Mesh.h"
 
 #include "Entity.h"
 #include "Chunk.h"
 #include "GUIElement.h"
+
+#define   FONTSTASH_IMPLEMENTATION
+#define GLFONTSTASH_IMPLEMENTATION
+#include "font/fontstash.h"
+#include "font/glfontstash.h"
 
 
 void scroll( GLFWwindow* window, double x, double y )
@@ -45,25 +49,21 @@ void Renderer::setupOGL( void )
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
 	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
 	glOrtho( 0, WIN_W, 0, WIN_H, -1, 1 );
 	glMatrixMode( GL_MODELVIEW );
+
+	glViewport( 0, 0, WIN_W, WIN_H );
 }
 
 
 /*!
  * Sets up the FreeType font renderer.
  */
-void Renderer::setupFT( void )
+void Renderer::setupFontStash( void )
 {
-	std::cout << "Initialising FreeType.\n";
-	if ( FT_Init_FreeType( &ft ) )
-		throw std::exception( "An error occurred during loading FreeType 2." );
-
-	std::cout << "Loading font Consola.\n\n";
-	if ( FT_New_Face( ft, "font/ConsolaMono.ttf", 0, &ft_consola ) )
-		throw std::exception( "An error occurred during loading Consola font." );
-
-	FT_Set_Pixel_Sizes( ft_consola, 0, 16 );
+	stash = glfonsCreate( 512, 512, FONS_ZERO_BOTTOMLEFT );
+	consola = fonsAddFont( stash, "consola", "font/ConsolaMono.ttf" );
 }
 
 
@@ -81,7 +81,7 @@ Renderer::Renderer( GLFWwindow* window ) :
 	textureCache( new ResourceCache<Texture>() ),
 	textureTerrain( textureCache->getResource( "texture/block_sand.tga" ) ),
 //	 shaderEntity( shaderCache->getResource( "shader/entity.prog"     ) ),
-	shaderTerrain( shaderCache->getResource( "shader/test_phong.prog" ) ),
+	shaderTerrain( shaderCache->getResource( "shader/terrain.prog"    ) ),
 //	    shaderGUI( shaderCache->getResource( "shader/gui.prog"        ) ),
 	 shaderShadow( shaderCache->getResource( "shader/shadow.prog"     ) ),
 	   shaderFont( shaderCache->getResource( "shader/font.prog"       ) ),
@@ -137,13 +137,13 @@ Renderer::Renderer( GLFWwindow* window ) :
 		shaderShadow->sendProjection( shadowMatrices->getProjection() );
 
 	setupOGL();
-	setupFT();
+	setupFontStash();
 
-	// TEMP DEBUG STUFF -----------------------------------------------------------------------¬
+	// DEBUG STUFF -------------------------------------------------------------------------¬
 	glfwSetScrollCallback( window, scroll );
 	dist = 46.0f;
 
-	// torus = Mesh::createTorus( glm::vec3( 0.0 ), glm::vec3( 10.0, 10.0, 10.0 ), 8, 1, 4 );
+	torus = Mesh::createTorus( glm::vec3( 0.0 ), glm::vec3( 10.0, 10.0, 10.0 ), 8, 1, 4 );
 }
 
 
@@ -202,7 +202,7 @@ void Renderer::render( double alpha )
 
 	textureTerrain->bind();
 	renderTerrain(         shaderTerrain, matrices, shadowMatrices );
-	renderEntities( alpha, shaderTerrain, matrices, shadowMatrices ); // TODO: switch shader back.
+//	renderEntities( alpha, shaderEntity,  matrices, shadowMatrices );
 	renderGUI(             shaderGUI,     matrices );
 
 	FBO::unbindTexture();
@@ -210,13 +210,11 @@ void Renderer::render( double alpha )
 
 
 /*!
- * Draw entities to the back buffer with interpolation.
- *
- * @param alpha amount to blend between last and current frame.
+ * Draw a torus to the back buffer.
  */
-void Renderer::renderEntities( double alpha, Shader* shader, Matrices* mat, Matrices* shadowMat )
+void Renderer::renderTorus( Shader* shader, Matrices* mat, Matrices* shadowMat )
 {
-	/*shader->bind();
+	shader->bind();
 
 	// Send directional light data.
 	if ( shader->usesLightDir() )
@@ -250,7 +248,18 @@ void Renderer::renderEntities( double alpha, Shader* shader, Matrices* mat, Matr
 
 	torus->draw();
 
-	Shader::unbind(); TODO: actual entity renderer */
+	Shader::unbind();
+}
+
+
+/*!
+ * Draw entities to the back buffer with interpolation.
+ *
+ * @param alpha amount to blend between last and current frame.
+ */
+void Renderer::renderEntities( double alpha, Shader* shader, Matrices* mat, Matrices* shadowMat )
+{
+	// TODO.
 }
 
 
@@ -317,11 +326,9 @@ void Renderer::renderGUI( Shader* shader, Matrices* mat )
  */
 void Renderer::renderProgress( std::string name, float progress, glm::vec4 color )
 {
-	Shader::unbind();
-
-	renderString( name, glm::vec2( 5, 20 ) );
-
 	glDisable( GL_TEXTURE_2D );
+	renderString( name, glm::vec2( 4, 21 ) );
+
 	glBegin( GL_QUADS );
 	{
 		glColor4f( color.r, color.g, color.b, color.a );
@@ -340,26 +347,10 @@ void Renderer::renderProgress( std::string name, float progress, glm::vec4 color
  */
 void Renderer::renderString( std::string text, glm::vec2 pos )
 {
-	FT_GlyphSlot g = ft_consola->glyph;
-	
-	for ( int i = 0; i < text.size(); i++ )
-	{
-		FT_UInt glyph_index = FT_Get_Char_Index( ft_consola, text.at( i ) );
-		FT_Load_Glyph( ft_consola, glyph_index, FT_LOAD_DEFAULT );
-		FT_Render_Glyph( g, FT_RENDER_MODE_NORMAL );
-
-		glRasterPos2f( pos.x, pos.y );
-		pos.x += g->advance.x / 64.0f;
-		pos.y += g->advance.y / 64.0f;
-
-		unsigned char* data = new unsigned char[g->bitmap.width*g->bitmap.rows];
-		int j = 0;
-		for ( int y = g->bitmap.rows - 1; y >= 0; y-- )
-			for ( int x = 0; x < g->bitmap.width; x++ )
-				data[j++] = g->bitmap.buffer[g->bitmap.width*y+x];
-
-		glDrawPixels( g->bitmap.width, g->bitmap.rows, GL_LUMINANCE, GL_UNSIGNED_BYTE, data );
-	}
+	fonsSetFont(  stash, consola );
+	fonsSetSize(  stash, 24.0f );
+	fonsSetColor( stash, glfonsRGBA( 255, 255, 255, 255 ) );
+	fonsDrawText( stash, pos.x, pos.y, text.c_str(), 0 );
 }
 
 

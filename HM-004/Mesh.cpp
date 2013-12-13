@@ -70,6 +70,7 @@ Mesh::Mesh( std::vector<vertex> vertices, std::vector<GLuint> indices, GLenum po
 		);
 	}
 	vao->unbind();
+	unbind();
 }
 
 
@@ -135,6 +136,7 @@ void Mesh::draw( void )
 		glDrawElements( poly_mode, count, GL_UNSIGNED_INT, (GLvoid*) 0 );
 
 		vao->unbind();
+		unbind();
 	}
 }
 

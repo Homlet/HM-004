@@ -75,7 +75,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)\..\..\glfw-3.0.3.bin.WIN32\lib-msvc110;$(ProjectDir)\..\..\glew-1.10.0\lib;$(ProjectDir)\..\..\freetype-2.5.0.1\objs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;Release\Win32\glew32.lib;win32\vc2012\freetype250MT.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;Release\Win32\glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -84,11 +84,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)\..\..\glm-0.9.4.6\glm;$(ProjectDir)\..\..\glew-1.10.0\include;$(ProjectDir)\..\..\glfw-3.0.3.bin.WIN64\include;$(ProjectDir)\..\..\freetype-2.5.0.1\include;$(ProjectDir)\..\..\freetype-2.5.0.1\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\glfw-3.0.3.bin.WIN64\lib-msvc110;$(ProjectDir)\..\..\glew-1.10.0\lib;$(ProjectDir)\..\..\freetype-2.5.0.1\objs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;Release\x64\glew32.lib;x64\vc2012\freetype250MT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\glfw-3.0.3.bin.WIN64\lib-msvc110;$(ProjectDir)\..\..\glew-1.10.0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;Release\x64\glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -103,8 +105,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\glfw-3.0.3.bin.WIN32\lib-msvc110;$(ProjectDir)\..\..\glew-1.10.0\lib;$(ProjectDir)\..\..\freetype-2.5.0.1\objs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;Release\Win32\glew32.lib;win32\vc2012\freetype250MT.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\glfw-3.0.3.bin.WIN32\lib-msvc110;$(ProjectDir)\..\..\glew-1.10.0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;Release\Win32\glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -121,8 +123,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\glfw-3.0.3.bin.WIN64\lib-msvc110;$(ProjectDir)\..\..\glew-1.10.0\lib;$(ProjectDir)\..\..\freetype-2.5.0.1\objs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;Release\x64\glew32.lib;x64\vc2012\freetype250MT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\glfw-3.0.3.bin.WIN64\lib-msvc110;$(ProjectDir)\..\..\glew-1.10.0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;Release\x64\glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <ShowProgress>NotSet</ShowProgress>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -130,7 +134,9 @@
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FBO.h" />
-    <ClInclude Include="Font.h" />
+    <ClInclude Include="font\fontstash.h" />
+    <ClInclude Include="font\glfontstash.h" />
+    <ClInclude Include="font\stb_truetype.h" />
     <ClInclude Include="GUIElement.h" />
     <ClInclude Include="Matrices.h" />
     <ClInclude Include="Mesh.h" />

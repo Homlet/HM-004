@@ -58,6 +58,9 @@
     <Filter Include="Resource Files\font">
       <UniqueIdentifier>{c549eab2-ecf5-4200-91c3-6075e4f442ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fontstash">
+      <UniqueIdentifier>{3a7a1615-0c7b-4ce4-b4f1-f24e9c68b911}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base.h">
@@ -120,8 +123,14 @@
     <ClInclude Include="FBO.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Font.h">
-      <Filter>Header Files\Render</Filter>
+    <ClInclude Include="font\stb_truetype.h">
+      <Filter>fontstash</Filter>
+    </ClInclude>
+    <ClInclude Include="font\glfontstash.h">
+      <Filter>fontstash</Filter>
+    </ClInclude>
+    <ClInclude Include="font\fontstash.h">
+      <Filter>fontstash</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

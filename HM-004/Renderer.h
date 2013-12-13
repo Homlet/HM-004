@@ -1,10 +1,6 @@
 #pragma once
 
 
-#include "ft2build.h"
-#include FT_FREETYPE_H
-
-
 template <typename T>
 class ResourceCache;
 
@@ -12,7 +8,6 @@ class Matrices;
 class Shader;
 class ShadowMap;
 class Texture;
-class Font;
 
 class     Mesh;
 class LerpMesh;
@@ -33,14 +28,14 @@ private:
 	ResourceCache<Shader>*   shaderCache;
 	ResourceCache<Texture>* textureCache;
 
-	FT_Library ft;
-	FT_Face    ft_consola;
+	struct FONScontext* stash;
+	int consola;
 
-	// TEMP DEBUG STUFF ----------¬
+	// DEBUG STUFF ---------------¬
 	float dist;
 	
 	Texture* textureTerrain;
-	// Mesh* torus;
+	Mesh* torus;
 	// ---------------------------'
 
 	Shader* shaderEntity;
@@ -57,13 +52,18 @@ private:
 	glm::vec3 lightColor;
 
 	void setupOGL( void );
-	void setupFT( void );
+	void setupFontStash( void );
 
 public:
 	Renderer( GLFWwindow* window );
 
 	void render( double alpha );
 
+	void renderTorus(
+		Shader* shader,
+		Matrices* mat,
+		Matrices* shadowMat = 0
+	);
 	void renderEntities(
 		double alpha,
 		Shader* shader,
