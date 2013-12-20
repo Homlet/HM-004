@@ -328,7 +328,7 @@ void LerpMesh::rotate( float amount )
  */
 Mesh* Mesh::createCube( glm::vec3 position, glm::vec3 size )
 {
-	vertex v_a[24] = {
+	std::vector<vertex> v{
 		// Front
 		{ -0.5, -0.5,  0.5,  0.0, 0.0, 0.0,   0.0,  0.0,  1.0 },
 		{  0.5, -0.5,  0.5,  1.0, 0.0, 0.0,   0.0,  0.0,  1.0 },
@@ -360,10 +360,8 @@ Mesh* Mesh::createCube( glm::vec3 position, glm::vec3 size )
 		{  0.5, -0.5,  0.5,  1.0, 1.0, 0.0,   0.0, -1.0,  0.0 },
 		{ -0.5, -0.5,  0.5,  0.0, 1.0, 0.0,   0.0, -1.0,  0.0 }
 	};
-	std::vector<vertex> v;
-	v.assign( v_a, v_a + 24 );
 
-	GLuint i_a[29] = {
+	std::vector<GLuint> i{
 		 0,  1,  2,  3,  0xffffffff,
 		 4,  5,  6,  7,  0xffffffff,
 		 8,  9, 10, 11,  0xffffffff,
@@ -371,8 +369,6 @@ Mesh* Mesh::createCube( glm::vec3 position, glm::vec3 size )
 		16, 17, 18, 19,  0xffffffff,
 		20, 21, 22, 23
 	};
-	std::vector<GLuint> i;
-	i.assign( i_a, i_a + 29 );
 
 	Mesh* m = new Mesh( v, i, GL_TRIANGLE_FAN );
 
@@ -399,7 +395,7 @@ Mesh* Mesh::createCube( glm::vec3 position, glm::vec3 size )
  */
 void Mesh::appendCube( glm::vec3 position, float size, std::vector<vertex>* v, std::vector<GLuint>* i )
 {
-	cube c = { true, true, true, true, true, true };
+	cube c{ true, true, true, true, true, true };
 	appendCube( position, size, c, v, i );
 }
 

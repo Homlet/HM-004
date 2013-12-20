@@ -1,6 +1,8 @@
 #include "Base.h"
 #include "Texture.h"
 
+#include "File.h"
+
 
 /**
  * Returns raw RGBA/RGB image data as an unsigned char array, loaded from a .tga image file

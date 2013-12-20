@@ -7,6 +7,7 @@
 #include "ResourceCache.h"
 
 #include "Matrices.h"
+#include "Camera.h"
 #include "Shader.h"
 #include "FBO.h"
 #include "Texture.h"
@@ -22,16 +23,10 @@
 #include "font/glfontstash.h"
 
 
-void scroll( GLFWwindow* window, double x, double y )
-{
-	Core::getRenderer()->dist -= (float) y;
-}
-
-
 /*!
  * Sets up the OpenGL state.
  */
-void Renderer::setupOGL( void )
+void Renderer::setupOpenGL( void )
 {
 	glEnable( GL_TEXTURE_2D );
 	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
@@ -84,31 +79,16 @@ Renderer::Renderer( GLFWwindow* window ) :
 	shaderTerrain( shaderCache->getResource( "shader/terrain.prog"    ) ),
 //	    shaderGUI( shaderCache->getResource( "shader/gui.prog"        ) ),
 	 shaderShadow( shaderCache->getResource( "shader/shadow.prog"     ) ),
-	   shaderFont( shaderCache->getResource( "shader/font.prog"       ) ),
 	shadowMatrices( new Matrices()  ),
-	      matrices( new Matrices()  ),
 	     shadowMap( new ShadowMap() )
 {
-	// Setup matrices.
-	matrices->setProjection(
-		80,
-		(float) WIN_W / WIN_H,
-		0.1,
-		128
-	);
-	matrices->lookAt(
-		glm::vec3( 0.0, 0.0, 43.0 ),
-		glm::vec3( 0.0 ),
-		glm::vec3( 0.0, 1.0, 0.0 )
-	);
-
 	// Setup shadow map matrices.
 	lightDir   = glm::vec3( 1.0, 0.7, 0.9 );
 	lightColor = glm::vec3( 1.0, 1.0, 0.8 );
 	shadowMatrices->setOrtho(
-		-64, 63,
-		-64, 63,
-		-64, 63
+		-128, 127,
+		-128, 127,
+		-128, 127
 	);
 	shadowMatrices->lookAt(
 		glm::vec3( 0.0 ),
@@ -122,27 +102,21 @@ Renderer::Renderer( GLFWwindow* window ) :
 		0.5, 0.5, 0.5, 1.0
 	);
 	
-	// Send projection matrices to shaders.
-	/* TODO: if ( shaderEntity->usesProjection() )
-		shaderTerrain->sendProjection( matrices->getProjection() );
+	// Send shadow projection matrices to shaders.
+	/* TODO:
 	if ( shaderEntity->usesShadowMatrices() )
 		shaderEntity->sendShadowProjection( shadowBias * shadowMatrices->getProjection() ); */
 
-	if ( shaderTerrain->usesProjection() )
-		shaderTerrain->sendProjection( matrices->getProjection() );
 	if ( shaderTerrain->usesShadowMatrices() )
 		shaderTerrain->sendShadowProjection( shadowBias * shadowMatrices->getProjection() );
 
 	if ( shaderShadow->usesProjection() )
 		shaderShadow->sendProjection( shadowMatrices->getProjection() );
 
-	setupOGL();
+	setupOpenGL();
 	setupFontStash();
 
-	// DEBUG STUFF -------------------------------------------------------------------------¬
-	glfwSetScrollCallback( window, scroll );
-	dist = 46.0f;
-
+	// DEBUG STUFF -----------------------------------------------------------------------¬
 	torus = Mesh::createTorus( glm::vec3( 0.0 ), glm::vec3( 10.0, 10.0, 10.0 ), 8, 1, 4 );
 }
 
@@ -150,32 +124,44 @@ Renderer::Renderer( GLFWwindow* window ) :
 /*!
  * Renders one frame to the back buffer, blending entity meshes by given alpha.
  */
-void Renderer::render( double alpha )
+void Renderer::render( double alpha, Camera* camera )
 {
 	double mx, my;
 	glfwGetCursorPos( Core::getRenderer()->window, &mx, &my );
+	my = glm::clamp<double>( WIN_H - my, 0.1, WIN_H - 0.1 );
+	float sy = (float) ( M_PI / WIN_H );
 
-	my = glm::clamp<double>( WIN_H - my, 0.1, WIN_H );
-
-	if ( glfwGetMouseButton( window, GLFW_MOUSE_BUTTON_LEFT ) )
-	{
-		matrices->lookAt(
-			glm::vec3(
-				glm::cos( mx / 200 ) * dist * glm::sin( my / 200 ) + 64.0,
-				glm::cos( my / 200 ) * dist + 64.0,
-				glm::sin( mx / 200 ) * dist * glm::sin( my / 200 ) + 64.0
-			),
-			glm::vec3( 64.0, 64.0, 64.0 ),
-			glm::vec3( 0.0, 1.0, 0.0 )
-		);
-	} else if ( glfwGetMouseButton( window, GLFW_MOUSE_BUTTON_RIGHT ) )
+	if ( glfwGetMouseButton( window, GLFW_MOUSE_BUTTON_RIGHT ) )
 	{
 		lightDir = glm::vec3(
 			glm::cos( mx / 200 ) * glm::sin( my / 200 ),
 			glm::cos( my / 200 ),
 			glm::sin( mx / 200 ) * glm::sin( my / 200 )
 		);
+	} else
+	{
+		camera->setDirection( glm::vec3(
+			glm::cos( mx / 200 ) * glm::sin( my * sy ),
+			glm::cos( my * sy + M_PI ),
+			glm::sin( mx / 200 ) * glm::sin( my * sy )
+		) );
 	}
+
+	float speed = 0.1f;
+	if ( glfwGetKey( Core::getRenderer()->window, GLFW_KEY_W ) )
+		camera->moveRelative( glm::vec3( 0.0, 0.0, -speed ) );
+	if ( glfwGetKey( Core::getRenderer()->window, GLFW_KEY_A ) )
+		camera->moveRelative( glm::vec3( -speed, 0.0, 0.0 ) );
+	if ( glfwGetKey( Core::getRenderer()->window, GLFW_KEY_S ) )
+		camera->moveRelative( glm::vec3( 0.0, 0.0, speed ) );
+	if ( glfwGetKey( Core::getRenderer()->window, GLFW_KEY_D ) )
+		camera->moveRelative( glm::vec3( speed, 0.0, 0.0 ) );
+
+	// Send projection matrices.
+	if ( shaderTerrain->usesProjection() )
+		shaderTerrain->sendProjection( camera->getMatrices()->getProjection() );
+	/* TODO: if ( shaderEntity->usesProjection() )
+		shaderTerrain->sendProjection( camera->getMatrices()->getProjection() ); */
 	
 	// Render shadow map as a normal scene.
 	shadowMatrices->lookAt(
@@ -201,11 +187,19 @@ void Renderer::render( double alpha )
 	glEnable( GL_CULL_FACE );
 
 	textureTerrain->bind();
-	renderTerrain(         shaderTerrain, matrices, shadowMatrices );
-//	renderEntities( alpha, shaderEntity,  matrices, shadowMatrices );
-	renderGUI(             shaderGUI,     matrices );
+	renderTerrain(         shaderTerrain, camera->getMatrices(), shadowMatrices );
+//	renderEntities( alpha, shaderEntity,  camera->getMatrices(), shadowMatrices );
+	renderGUI(             shaderGUI,     camera->getMatrices() );
 
 	FBO::unbindTexture();
+
+	// Print mouse x and y values.
+	std::stringstream s;
+	s << "x: " << std::setw( 4 ) << mx << " y: " << std::setw( 4 ) << my;
+	renderString( s.str(), 24.0f, glm::vec2( 5, 5 ), glm::vec3( 0 ), 2 );
+	renderString( s.str(), 24.0f, glm::vec2( 5, 5 ), glm::vec3( 0 ), 3 );
+	renderString( s.str(), 24.0f, glm::vec2( 5, 5 ), glm::vec3( 0 ), 4 );
+	renderString( s.str(), 24.0f, glm::vec2( 5, 5 ) );
 }
 
 
@@ -326,9 +320,9 @@ void Renderer::renderGUI( Shader* shader, Matrices* mat )
  */
 void Renderer::renderProgress( std::string name, float progress, glm::vec4 color )
 {
-	glDisable( GL_TEXTURE_2D );
-	renderString( name, glm::vec2( 4, 21 ) );
+	renderString( name, 24.0f, glm::vec2( 4, 21 ) );
 
+	glDisable( GL_TEXTURE_2D );
 	glBegin( GL_QUADS );
 	{
 		glColor4f( color.r, color.g, color.b, color.a );
@@ -345,12 +339,22 @@ void Renderer::renderProgress( std::string name, float progress, glm::vec4 color
 /*!
  * Draw a string to the back buffer, via the fixed-function pipeline.
  */
-void Renderer::renderString( std::string text, glm::vec2 pos )
+void Renderer::renderString( std::string text, float size, glm::vec2 pos, glm::vec3 color, float blur )
 {
+	glDisable( GL_TEXTURE_2D );
+
 	fonsSetFont(  stash, consola );
-	fonsSetSize(  stash, 24.0f );
-	fonsSetColor( stash, glfonsRGBA( 255, 255, 255, 255 ) );
+	fonsSetSize(  stash, size );
+	fonsSetColor( stash, glfonsRGBA(
+		(unsigned char) color.r * 255,
+		(unsigned char) color.g * 255,
+		(unsigned char) color.b * 255,
+		255
+	) );
+	fonsSetBlur(  stash, blur );
 	fonsDrawText( stash, pos.x, pos.y, text.c_str(), 0 );
+
+	glEnable( GL_TEXTURE_2D );
 }
 
 

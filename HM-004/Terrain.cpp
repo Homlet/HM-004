@@ -12,16 +12,16 @@ Terrain::Terrain( void ) :
 	blockEmpty->type = 0;
 
 	int count = 0;
-	for ( int i = 0; i < 8; i++ )
+	for ( int i = 0; i < 4; i++ )
 	{
-		for ( int j = 0; j < 8; j++ )
+		for ( int j = 0; j < 4; j++ )
 		{
-			for ( int k = 0; k < 8; k++ )
+			for ( int k = 0; k < 4; k++ )
 			{
 				chunks[glm::ivec3( i, j, k )] = new Chunk( glm::ivec3( i, j, k ), csize, this );
 
 				// Stop the window from becoming unresponsive.
-				Core::cheapProgress( "Generating terrain.", (float) count++ / ( 8 * 8 * 8 ) );
+				Core::cheapProgress( "Generating terrain.", (float) count++ / ( 4 * 4 * 4 ) );
 			}
 		}
 	}
@@ -40,7 +40,7 @@ void Terrain::addToRenderer( Renderer* renderer )
 		renderer->addTerrain( itr->second );
 
 		// Stop the window from becoming unresponsive while large batches are meshed.
-		Core::cheapProgress( "Meshing chunks.", (float) count++ / ( 8 * 8 * 8 ) );
+		Core::cheapProgress( "Meshing chunks.", (float) count++ / ( 4 * 4 * 4 ) );
 	}
 }
 

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<program name="font">
-  <vertex   url="shader/font.vert" />
-  <fragment url="shader/font.frag" />
-</program>

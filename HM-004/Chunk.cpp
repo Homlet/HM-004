@@ -26,7 +26,7 @@ Chunk::Chunk( glm::ivec3 position, int size, Terrain* terrain ) :
 				int y = j + position.y * size;
 				int z = k + position.z * size;
 
-				if ( y < ( glm::simplex( glm::vec2( x / 100.0, z / 100.0 ) ) + 1 ) * 64 )
+				if ( y < ( glm::simplex( glm::vec2( x / 100.0, z / 100.0 ) ) + 1 ) * 32 )
 					blocks[i][j][k].type = 1;
 				else
 					blocks[i][j][k].type = 0;

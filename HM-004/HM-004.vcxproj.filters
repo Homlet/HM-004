@@ -132,6 +132,15 @@
     <ClInclude Include="font\fontstash.h">
       <Filter>fontstash</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="File.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -171,6 +180,15 @@
       <Filter>Source Files\State\GUI</Filter>
     </ClCompile>
     <ClCompile Include="FBO.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="File.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
   </ItemGroup>
@@ -260,15 +278,6 @@
       <Filter>Resource Files\shader</Filter>
     </None>
     <None Include="shader\terrain.vert">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\font.vert">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\font.frag">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\font.prog">
       <Filter>Resource Files\shader</Filter>
     </None>
   </ItemGroup>

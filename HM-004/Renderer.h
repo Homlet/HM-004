@@ -5,6 +5,7 @@ template <typename T>
 class ResourceCache;
 
 class Matrices;
+class Camera;
 class Shader;
 class ShadowMap;
 class Texture;
@@ -19,45 +20,45 @@ class GUIElement;
 
 class Renderer {
 private:
-	friend void scroll( GLFWwindow* window, double x, double y );
-
+	// Meshes for rendering.
 	std::map<int, LerpMesh*>* entities;
 	std::map<int,     Mesh*>* terrain;
 	std::map<int,     Mesh*>* gui;
 
+	// Resource caches.
 	ResourceCache<Shader>*   shaderCache;
 	ResourceCache<Texture>* textureCache;
 
+	// Fonts.
 	struct FONScontext* stash;
 	int consola;
 
 	// DEBUG STUFF ---------------¬
-	float dist;
-	
 	Texture* textureTerrain;
 	Mesh* torus;
 	// ---------------------------'
 
+	// Shaders.
 	Shader* shaderEntity;
 	Shader* shaderTerrain;
 	Shader* shaderGUI;
 	Shader* shaderShadow;
-	Shader* shaderFont;
 	
-	Matrices* matrices;
+	// Light and shadow.
 	Matrices*  shadowMatrices;
 	ShadowMap* shadowMap;
 
 	glm::vec3 lightDir;
 	glm::vec3 lightColor;
 
-	void setupOGL( void );
+	// Initial setup of libraries.
+	void setupOpenGL( void );
 	void setupFontStash( void );
 
 public:
 	Renderer( GLFWwindow* window );
 
-	void render( double alpha );
+	void render( double alpha, Camera* camera );
 
 	void renderTorus(
 		Shader* shader,
@@ -86,7 +87,10 @@ public:
 	);
 	void renderString(
 		std::string text,
-		glm::vec2 pos
+		float size,
+		glm::vec2 pos,
+		glm::vec3 color = glm::vec3( 1.0, 1.0, 1.0 ),
+		float blur = 0
 	);
 
 	void  addEntity( Entity* entity   );
