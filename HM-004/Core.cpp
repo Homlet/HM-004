@@ -1,5 +1,6 @@
 #include "MacroTime.h"
 #include "MacroWindow.h"
+#include "MacroInput.h"
 
 #include "Base.h"
 
@@ -8,6 +9,9 @@
 #include "Mesh.h"
 #include "Shader.h"
 
+#include "State.h"
+#include "Player.h"
+#include "Input.h"
 #include "Terrain.h"
 
 
@@ -35,7 +39,12 @@ Core::Core( void )
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
 	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE );
 
-	GLFWwindow* window = glfwCreateWindow( WIN_W, WIN_H, WIN_TITLE, NULL, NULL );
+	GLFWwindow* window = glfwCreateWindow(
+		WIN_W, WIN_H,
+		WIN_TITLE,
+		( WIN_FULL ) ? glfwGetPrimaryMonitor() : 0,
+		0
+	);
 
 	glfwDefaultWindowHints();
 
@@ -63,6 +72,15 @@ Core::Core( void )
 
 	// Initialise renderer.
 	renderer = new Renderer( window );
+
+	// Initialise input.
+	input = new Input();
+
+	input->add( IN_FORWARD,  { GLFW_KEY_W, GLFW_KEY_UP } );
+	input->add( IN_BACKWARD, { GLFW_KEY_S, GLFW_KEY_DOWN } );
+	input->add( IN_LEFT,     { GLFW_KEY_A, GLFW_KEY_LEFT } );
+	input->add( IN_RIGHT,    { GLFW_KEY_D, GLFW_KEY_RIGHT } );
+	input->add( "pause", { GLFW_KEY_ESCAPE, GLFW_KEY_P } );
 }
 
 
@@ -77,8 +95,8 @@ Core* Core::getInstance( void )
 {
 	if ( !exists )
 	{
-		instance = new Core();
 		exists = true;
+		instance = new Core();
 	}
 
 	return instance;
@@ -91,23 +109,20 @@ Core* Core::getInstance( void )
 void Core::run( void )
 {
 	Core* core = getInstance();
-
-	// Dummy camera.
-	Camera camera( true );
-	camera.setProjection(
-		80,
-		(float) WIN_W / WIN_H,
-		0.1,
-		256
-	);
-	camera.setDirection( glm::vec3( 0.0, 0.0, 1.0 ) );
-	camera.moveTo( glm::vec3( 96.0, 96.0, 0.0 ) );
+	getRenderer()->setup();
 
 	// Dummy terrain.
 	Terrain terrain;
-	terrain.addToRenderer( Core::getRenderer() );
+	terrain.addToRenderer( getRenderer() );
 
-	double  t = 0.0;
+	// Dummy state.
+	setState( new State() );
+
+	// Disable mouse cursor.
+	glfwSetInputMode( getRenderer()->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
+	bool paused = false;
+
+	      double  t = 0.0;
 	const double dt = TME_TICK;
 
 	double current_time     = 0.0;
@@ -116,24 +131,39 @@ void Core::run( void )
 
 	while ( !glfwWindowShouldClose( core->renderer->window ) )
 	{
-		glfwPollEvents();
-
 		current_time = glfwGetTime();
 		accumulated_time += current_time - last_time;
 		last_time = current_time;
 
 		while ( accumulated_time >= dt )
 		{
+			glfwPollEvents();
+			getInput()->poll();
+
+			if ( getInput()->pressed( "pause" ) )
+			{
+				paused = !paused;
+
+				glfwSetInputMode(
+					getRenderer()->window,
+					GLFW_CURSOR,
+					( paused ) ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED
+				);
+			}
+
+			getState()->update( dt, t );
 			accumulated_time -= dt;
 			t += dt;
 		}
 
 		double alpha = accumulated_time / dt;
 
-		core->renderer->render( alpha, &camera );
+		core->renderer->render( alpha, getState()->getPlayer()->getCamera() );
 
 		glfwSwapBuffers( core->renderer->window );
 	}
+
+	delete core->state;
 
 	glfwDestroyWindow( core->renderer->window );
 	glfwTerminate();
@@ -177,6 +207,7 @@ void Core::cheapProgress( std::string name, float progress )
 		exit( EXIT_SUCCESS );
 	}
 
+	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	Core::getRenderer()->renderProgress( name, progress );
@@ -191,4 +222,44 @@ void Core::cheapProgress( std::string name, float progress )
 Renderer* Core::getRenderer( void )
 {
 	return getInstance()->renderer;
+}
+
+
+/*!
+ * Returns a pointer to the current state object.
+ */
+State* Core::getState( void )
+{
+	Core* core = getInstance();
+
+	if ( !core->state )
+	{
+		core->state = new State();
+		core->state->create();
+	}
+
+	return core->state;
+}
+
+
+/*!
+ * Changes the current state object. This will delete the old object.
+ */
+void Core::setState( State* next )
+{
+	Core* core = getInstance();
+
+	if ( core->state )
+		delete core->state;
+
+	core->state = next;
+}
+
+
+/*!
+ * Returns a pointer to the input object.
+ */
+Input* Core::getInput( void )
+{
+	return getInstance()->input;
 }

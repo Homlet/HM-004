@@ -8,7 +8,7 @@ struct Block;
 
 class ivec3_compare {
 public:
-	bool operator()(glm::ivec3 const& l, glm::ivec3 const& r )
+	bool operator()( glm::ivec3 const& l, glm::ivec3 const& r )
 	{
 		return l.x  < r.x ||
 			   l.x == r.x && l.y  < r.y ||
@@ -26,6 +26,7 @@ private:
 
 public:
 	Terrain( void );
+	~Terrain( void );
 
 	void addToRenderer( Renderer* renderer );
 

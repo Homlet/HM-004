@@ -11,12 +11,6 @@ uniform vec3 u_lightColor;
 
 uniform sampler2D u_2D; // Unit 0.
 
-float random( vec4 seed )
-{
-	float d = dot( seed, vec4( 12.9898, 78.233, 45.164, 94.673 ) );
-	return fract( sin( d ) * 43758.5453 );
-}
-
 void main( void )
 {
 	// Ambient part:
@@ -27,7 +21,7 @@ void main( void )
 
 	o_color = vec4(
 		mix(
-			vec3( 0.0 ),
+			vec3( 0.616, 0.843, 0.937 ),
 			( ambient + diffuse ) *
 			u_lightColor *
 			texture( u_2D, f_tex.st ).rgb,

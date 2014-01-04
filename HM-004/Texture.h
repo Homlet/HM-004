@@ -7,13 +7,6 @@ class ResourceLoader;
 
 class Texture {
 private:
-	static unsigned char* loadTGA(
-		std::string url,
-		int* width,
-		int* height,
-		int* depth
-	);
-
 	GLuint ID;
 	std::string name;
 
@@ -34,6 +27,13 @@ public:
 		int height,
 		GLenum format_inner,
 		GLenum format_outer
+	);
+
+	unsigned char* flipY(
+		unsigned char* data,
+		int width,
+		int height,
+		int depth
 	);
 
 	       void   bind( void );

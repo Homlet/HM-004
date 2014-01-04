@@ -11,5 +11,7 @@ public:
 
 	int getID( void );
 
+	virtual void update( double delta, double elapsed ) = 0;
+
 	LerpMesh* getMesh( void );
 };

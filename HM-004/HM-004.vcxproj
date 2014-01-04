@@ -141,14 +141,18 @@
     <ClInclude Include="font\glfontstash.h" />
     <ClInclude Include="font\stb_truetype.h" />
     <ClInclude Include="GUIElement.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="MacroInput.h" />
     <ClInclude Include="Matrices.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="pugixml\pugiconfig.hpp" />
     <ClInclude Include="pugixml\pugixml.hpp" />
     <ClInclude Include="ResourceCache.h" />
     <ClInclude Include="ResourceLoader.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="State.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="MacroTime.h" />
     <ClInclude Include="MacroWindow.h" />
@@ -165,12 +169,16 @@
     <ClCompile Include="FBO.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GUIElement.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Matrices.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="pugixml\pugixml.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="State.cpp" />
+    <ClCompile Include="stb_image.c" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VAO.cpp" />
@@ -192,23 +200,21 @@
     <None Include="shader\terrain.prog" />
     <None Include="shader\terrain.frag" />
     <None Include="shader\terrain.vert" />
-    <None Include="texture\block_dirt.tga" />
-    <None Include="texture\block_dirt.xcf" />
-    <None Include="texture\block_grass_side.tga" />
     <None Include="texture\block_grass_side.xcf" />
-    <None Include="texture\block_grass_top.tga" />
     <None Include="texture\block_grass_top.xcf" />
-    <None Include="texture\block_rock.tga" />
+    <None Include="texture\block_ground.xcf" />
     <None Include="texture\block_rock.xcf" />
-    <None Include="texture\block_sand.tga" />
     <None Include="texture\block_sand.xcf" />
     <None Include="texture\test.xcf" />
-    <None Include="texture\test_rgb.tga" />
-    <None Include="texture\test_rgba.tga" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="font\ConsolaMono-Bold.ttf" />
     <Font Include="font\ConsolaMono.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="texture\block_grass_top.png" />
+    <Image Include="texture\block_ground.png" />
+    <Image Include="texture\test.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

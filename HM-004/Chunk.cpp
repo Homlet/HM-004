@@ -26,7 +26,7 @@ Chunk::Chunk( glm::ivec3 position, int size, Terrain* terrain ) :
 				int y = j + position.y * size;
 				int z = k + position.z * size;
 
-				if ( y < ( glm::simplex( glm::vec2( x / 100.0, z / 100.0 ) ) + 1 ) * 32 )
+				if ( y < 48 + ( glm::simplex( glm::vec2( x / 100.0, z / 100.0 ) ) + 1 ) * 16 )
 					blocks[i][j][k].type = 1;
 				else
 					blocks[i][j][k].type = 0;
@@ -80,8 +80,8 @@ Mesh* Chunk::generateMesh( void )
 	for ( int d = 0; d < 3; d++ )
 	{
 		glm::ivec3 p, q;
-		int u = ( d + 1 ) % 3;
-		int v = ( d + 2 ) % 3;
+		int u = ( d == 0 ) ? 2 : 0;
+		int v = ( d == 1 ) ? 2 : 1;
 		char** type = new char*[size];
 		bool** face = new bool*[size];
 		for ( int m = 0; m < size; m++ )
@@ -133,10 +133,15 @@ Mesh* Chunk::generateMesh( void )
 							h = th;
 					}
 
+					// Flip faces on x and y axes because reasons.
+					if ( d != 2 )
+						f = !f;
+
 					// Add quad.
-					p[u] = i; p[v] = j;
-					glm::vec3 wd; wd[f?u:v] = (float)( f ? w : h );
-					glm::vec3 hd; hd[f?v:u] = (float)( f ? h : w );
+					p[u] = f ? i : i + w;
+					p[v] = j;
+					glm::vec3 wd; wd[u] = (float) ( f ? w : -w );
+					glm::vec3 hd; hd[v] = (float) ( h );
 					Mesh::appendQuad(
 						quad(
 							glm::vec3( positionAbs ) + glm::vec3( p ),
@@ -144,8 +149,7 @@ Mesh* Chunk::generateMesh( void )
 							glm::vec3( positionAbs ) + glm::vec3( p[0]+wd[0]+hd[0], p[1]+wd[1]+hd[1], p[2]+wd[2]+hd[2] ),
 							glm::vec3( positionAbs ) + glm::vec3( p[0]      +hd[0], p[1]      +hd[1], p[2]      +hd[2] ),
 							glm::vec3( f ? q : -q ),
-							(float)( f ? w : h ),
-							(float)( f ? h : w )
+							(float) w, (float) h
 						),
 						&vertices,
 						&indices

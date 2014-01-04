@@ -16,6 +16,7 @@
 #include "Entity.h"
 #include "Chunk.h"
 #include "GUIElement.h"
+#include "Input.h"
 
 #define   FONTSTASH_IMPLEMENTATION
 #define GLFONTSTASH_IMPLEMENTATION
@@ -63,7 +64,7 @@ void Renderer::setupFontStash( void )
 
 
 /*!
- * Sets up the rendering context.
+ * Creates the rendering context.
  *
  * @param window GLFWwindow whose context to render to. Once set, this cannot be changed.
  */
@@ -74,13 +75,21 @@ Renderer::Renderer( GLFWwindow* window ) :
 	     gui( new std::map<int,     Mesh*>() ),
 	 shaderCache( new ResourceCache<Shader>()  ),
 	textureCache( new ResourceCache<Texture>() ),
-	textureTerrain( textureCache->getResource( "texture/block_sand.tga" ) ),
+	textureTerrain( textureCache->getResource( "texture/block_ground.png" ) ),
 //	 shaderEntity( shaderCache->getResource( "shader/entity.prog"     ) ),
 	shaderTerrain( shaderCache->getResource( "shader/terrain.prog"    ) ),
 //	    shaderGUI( shaderCache->getResource( "shader/gui.prog"        ) ),
 	 shaderShadow( shaderCache->getResource( "shader/shadow.prog"     ) ),
 	shadowMatrices( new Matrices()  ),
 	     shadowMap( new ShadowMap() )
+{
+}
+
+
+/*!
+ * Performs setup tasks that may rely on other Core modules.
+ */
+void Renderer::setup( void )
 {
 	// Setup shadow map matrices.
 	lightDir   = glm::vec3( 1.0, 0.7, 0.9 );
@@ -118,6 +127,7 @@ Renderer::Renderer( GLFWwindow* window ) :
 
 	// DEBUG STUFF -----------------------------------------------------------------------¬
 	torus = Mesh::createTorus( glm::vec3( 0.0 ), glm::vec3( 10.0, 10.0, 10.0 ), 8, 1, 4 );
+	Core::getInput()->add( "display_lines", { GLFW_KEY_F } );
 }
 
 
@@ -126,36 +136,13 @@ Renderer::Renderer( GLFWwindow* window ) :
  */
 void Renderer::render( double alpha, Camera* camera )
 {
-	double mx, my;
-	glfwGetCursorPos( Core::getRenderer()->window, &mx, &my );
-	my = glm::clamp<double>( WIN_H - my, 0.1, WIN_H - 0.1 );
-	float sy = (float) ( M_PI / WIN_H );
-
-	if ( glfwGetMouseButton( window, GLFW_MOUSE_BUTTON_RIGHT ) )
-	{
-		lightDir = glm::vec3(
-			glm::cos( mx / 200 ) * glm::sin( my / 200 ),
-			glm::cos( my / 200 ),
-			glm::sin( mx / 200 ) * glm::sin( my / 200 )
-		);
-	} else
-	{
-		camera->setDirection( glm::vec3(
-			glm::cos( mx / 200 ) * glm::sin( my * sy ),
-			glm::cos( my * sy + M_PI ),
-			glm::sin( mx / 200 ) * glm::sin( my * sy )
-		) );
-	}
-
-	float speed = 0.1f;
-	if ( glfwGetKey( Core::getRenderer()->window, GLFW_KEY_W ) )
-		camera->moveRelative( glm::vec3( 0.0, 0.0, -speed ) );
-	if ( glfwGetKey( Core::getRenderer()->window, GLFW_KEY_A ) )
-		camera->moveRelative( glm::vec3( -speed, 0.0, 0.0 ) );
-	if ( glfwGetKey( Core::getRenderer()->window, GLFW_KEY_S ) )
-		camera->moveRelative( glm::vec3( 0.0, 0.0, speed ) );
-	if ( glfwGetKey( Core::getRenderer()->window, GLFW_KEY_D ) )
-		camera->moveRelative( glm::vec3( speed, 0.0, 0.0 ) );
+	// Switchable display modes.
+	if ( Core::getInput()->pressed( "display_lines" ) )
+		glPolygonMode( GL_FRONT, GL_LINE );
+	else if ( Core::getInput()->released( "display_lines" ) )
+		glPolygonMode( GL_FRONT, GL_FILL );
+	
+	glClearColor( 0.529f, 0.808f, 0.922f, 1.0f );
 
 	// Send projection matrices.
 	if ( shaderTerrain->usesProjection() )
@@ -188,23 +175,15 @@ void Renderer::render( double alpha, Camera* camera )
 
 	textureTerrain->bind();
 	renderTerrain(         shaderTerrain, camera->getMatrices(), shadowMatrices );
-//	renderEntities( alpha, shaderEntity,  camera->getMatrices(), shadowMatrices );
+	renderEntities( alpha, shaderEntity,  camera->getMatrices(), shadowMatrices );
 	renderGUI(             shaderGUI,     camera->getMatrices() );
 
 	FBO::unbindTexture();
-
-	// Print mouse x and y values.
-	std::stringstream s;
-	s << "x: " << std::setw( 4 ) << mx << " y: " << std::setw( 4 ) << my;
-	renderString( s.str(), 24.0f, glm::vec2( 5, 5 ), glm::vec3( 0 ), 2 );
-	renderString( s.str(), 24.0f, glm::vec2( 5, 5 ), glm::vec3( 0 ), 3 );
-	renderString( s.str(), 24.0f, glm::vec2( 5, 5 ), glm::vec3( 0 ), 4 );
-	renderString( s.str(), 24.0f, glm::vec2( 5, 5 ) );
 }
 
 
 /*!
- * Draw a torus to the back buffer.
+ * Draw a torus to the back buffer, for debugging purposes.
  */
 void Renderer::renderTorus( Shader* shader, Matrices* mat, Matrices* shadowMat )
 {
@@ -233,7 +212,7 @@ void Renderer::renderTorus( Shader* shader, Matrices* mat, Matrices* shadowMat )
 
 	// Compute and send the shadow matrices if needed.
 	if ( shadowMat != 0 &&
-			shader->usesShadowMatrices() )
+		shader->usesShadowMatrices() )
 	{
 		shadowMat->loadIdentity();
 		shadowMat->translate( torus->getPosition() );

@@ -1,8 +1,10 @@
 #pragma once
 
 
-#define WIN_W 1280
-#define WIN_H 720
+#define WIN_FULL false
+
+#define WIN_W 1600
+#define WIN_H 900
 
 #define WIN_HW WIN_W / 2.0f
 #define WIN_HH WIN_H / 2.0f

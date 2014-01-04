@@ -3,77 +3,7 @@
 
 #include "File.h"
 
-
-/**
- * Returns raw RGBA/RGB image data as an unsigned char array, loaded from a .tga image file
- *
- * @param url Path to a .tga image file
- * @param width  Integer pointer for width
- * @param height Integer pointer for height
- * @param depth  Integer pointer for bit depth
- */
-unsigned char* Texture::loadTGA( std::string url, int* width, int* height, int* depth )
-{
-	std::ifstream img_stream( url );
-	
-	if ( img_stream.is_open() )
-	{
-		// Read and store header.
-		unsigned char header[18];
-
-		for ( int i = 0; i < 18; i++ )
-			header[i] = (unsigned char) img_stream.get();
-
-		// Check image is type 2 (colour).
-		if ( header[2] != 2 )
-		{
-			img_stream.close();
-			throw std::exception( ( "Invalid image type: " + url ).c_str() );
-
-			return 0;
-		}
-
-		// Get image size and pixel depth.
-		*width  = header[13] * 256 + header[12];
-		*height = header[15] * 256 + header[14];
-		*depth  = header[16] / 8;
-
-		// Check bit depth is 3 (BGR) or 4 (BGRA) bytes per pixel.
-		if ( *depth != 3 && *depth != 4 )
-		{
-			img_stream.close();
-			throw std::exception( ( "Invalid image bit depth: " + url ).c_str() );
-
-			return 0;
-		}
-
-		int size = *width * *height * *depth;
-		unsigned char* data = new unsigned char[size];
-
-		// Ignore Image ID field.
-		img_stream.ignore( header[0] );
-
-		// Read uncompressed data.
-		for ( int i = 0; i < size; i++ )
-			data[i] = (unsigned char) img_stream.get();
-
-		// Swap red and blue colour components (BGR/BGRA to RGB/RGBA).
-		unsigned char temp;
-		for ( int i = 0; i < size; i += *depth )
-		{
-			temp = data[i];
-			data[i] = data[i + 2];
-			data[i + 2] = temp;
-		}
-
-		img_stream.close();
-		
-		return data;
-	}
-
-	throw std::exception( ( "Unable to open file: " + url ).c_str() );
-	return 0;
-}
+#include "stb_image.h"
 
 
 /*!
@@ -83,11 +13,14 @@ Texture::Texture( std::string name, std::string url ) :
 	name( name )
 {
 	int width, height, depth;
-	unsigned char* data = loadTGA( url, &width, &height, &depth );
+	unsigned char* data = stbi_load( url.c_str(), &width, &height, &depth, 0 );
+	data = flipY( data, width, height, depth );
 
 	GLenum format = ( depth == 3 ) ? GL_RGB : GL_RGBA;
 
 	bufferData( data, width, height, GL_RGBA8, format );
+
+	stbi_image_free( data );
 }
 
 
@@ -126,6 +59,33 @@ void Texture::bufferData( unsigned char* data, int width, int height, GLenum for
 		glGenerateMipmap( GL_TEXTURE_2D );
 	}
 	unbind();
+}
+
+
+/*!
+ * Flips an image file along its y axis.
+ */
+unsigned char* Texture::flipY( unsigned char* data, int width, int height, int depth )
+{
+	int w_comp = width * depth;
+
+	for ( int i = 0, j = height - 1; i < height / 2; i++, j-- )
+	{
+		// Tranfer top line to buffer.
+		unsigned char* buffer = new unsigned char[w_comp];
+		for ( int k = 0; k < w_comp; k++ )
+			buffer[k] = data[i*w_comp+k];
+
+		// Transfer bottom line to top.
+		for ( int k = 0; k < w_comp; k++ )
+			data[i*w_comp+k] = data[j*w_comp+k];
+
+		// Transfer buffer to bottom line.
+		for ( int k = 0; k < w_comp; k++ )
+			data[j*w_comp+k] = buffer[k];
+	}
+
+	return data;
 }
 
 

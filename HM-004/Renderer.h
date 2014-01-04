@@ -58,23 +58,24 @@ private:
 public:
 	Renderer( GLFWwindow* window );
 
+	void setup( void );
 	void render( double alpha, Camera* camera );
 
 	void renderTorus(
 		Shader* shader,
 		Matrices* mat,
-		Matrices* shadowMat = 0
+		Matrices* shadowMat = nullptr
 	);
 	void renderEntities(
 		double alpha,
 		Shader* shader,
 		Matrices* mat,
-		Matrices* shadowMat = 0
+		Matrices* shadowMat = nullptr
 	);
 	void renderTerrain(
 		Shader* shader,
 		Matrices* mat,
-		Matrices* shadowMat = 0
+		Matrices* shadowMat = nullptr
 	);
 	void renderGUI(
 		Shader* shader,
@@ -90,7 +91,7 @@ public:
 		float size,
 		glm::vec2 pos,
 		glm::vec3 color = glm::vec3( 1.0, 1.0, 1.0 ),
-		float blur = 0
+		float blur = 0.0f
 	);
 
 	void  addEntity( Entity* entity   );

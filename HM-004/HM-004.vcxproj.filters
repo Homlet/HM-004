@@ -141,6 +141,18 @@
     <ClInclude Include="Core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="MacroInput.h">
+      <Filter>Header Files\Macros</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -191,6 +203,18 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="State.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_image.c">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\basic.frag">
@@ -202,25 +226,13 @@
     <None Include="shader\basic.vert">
       <Filter>Resource Files\shader</Filter>
     </None>
-    <None Include="texture\block_dirt.xcf">
-      <Filter>Resource Files\texture</Filter>
-    </None>
     <None Include="texture\block_grass_side.xcf">
-      <Filter>Resource Files\texture</Filter>
-    </None>
-    <None Include="texture\block_grass_top.tga">
       <Filter>Resource Files\texture</Filter>
     </None>
     <None Include="texture\block_grass_top.xcf">
       <Filter>Resource Files\texture</Filter>
     </None>
-    <None Include="texture\block_rock.tga">
-      <Filter>Resource Files\texture</Filter>
-    </None>
     <None Include="texture\block_rock.xcf">
-      <Filter>Resource Files\texture</Filter>
-    </None>
-    <None Include="texture\block_sand.tga">
       <Filter>Resource Files\texture</Filter>
     </None>
     <None Include="texture\block_sand.xcf">
@@ -232,20 +244,8 @@
     <None Include="shader\textured.frag">
       <Filter>Resource Files\shader</Filter>
     </None>
-    <None Include="texture\block_dirt.tga">
-      <Filter>Resource Files\texture</Filter>
-    </None>
-    <None Include="texture\block_grass_side.tga">
-      <Filter>Resource Files\texture</Filter>
-    </None>
     <None Include="shader\test_phong.prog">
       <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="texture\test_rgba.tga">
-      <Filter>Resource Files\texture</Filter>
-    </None>
-    <None Include="texture\test_rgb.tga">
-      <Filter>Resource Files\texture</Filter>
     </None>
     <None Include="texture\test.xcf">
       <Filter>Resource Files\texture</Filter>
@@ -280,6 +280,9 @@
     <None Include="shader\terrain.vert">
       <Filter>Resource Files\shader</Filter>
     </None>
+    <None Include="texture\block_ground.xcf">
+      <Filter>Resource Files\texture</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Font Include="font\ConsolaMono-Bold.ttf">
@@ -288,5 +291,16 @@
     <Font Include="font\ConsolaMono.ttf">
       <Filter>Resource Files\font</Filter>
     </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="texture\test.png">
+      <Filter>Resource Files\texture</Filter>
+    </Image>
+    <Image Include="texture\block_grass_top.png">
+      <Filter>Resource Files\texture</Filter>
+    </Image>
+    <Image Include="texture\block_ground.png">
+      <Filter>Resource Files\texture</Filter>
+    </Image>
   </ItemGroup>
 </Project>

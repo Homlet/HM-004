@@ -15,7 +15,7 @@ private:
 	static Core* getInstance( void );
 
 	Renderer* renderer;
-	State*    state;
+	State*    state{ nullptr };
 	Input*    input;
 
 public:
