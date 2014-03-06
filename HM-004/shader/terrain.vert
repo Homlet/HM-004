@@ -1,7 +1,9 @@
 #version 400
 
+#define RECP_512 0.001953125
 #define RECP_256 0.00390625
 #define RECP_128 0.0078125
+#define RECP_64  0.015625
 
 layout(location = 0) in vec3 i_pos;
 layout(location = 1) in vec3 i_tex;
@@ -22,7 +24,7 @@ void main( void )
 
 	f_tex = i_tex;
 	f_normal = normalize( u_N * i_normal );
-	f_fog = 1.0 + ( gl_Position.z * RECP_256 );
+	f_fog = 1.0 - max( 0, -( 64 + gl_Position.z ) * RECP_64 );
 
 	gl_Position = u_P * gl_Position;
 }

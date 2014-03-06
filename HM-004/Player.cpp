@@ -37,12 +37,12 @@ DebugPlayer::DebugPlayer( void ) :
         80,
         (float) WIN_W / WIN_H,
         0.1,
-        256
+        128
     );
     camera->setDirection( glm::vec3( 0.0, 0.0, 1.0 ) );
     camera->moveTo( glm::vec3( 96.0, 96.0, 0.0 ) );
 
-	Core::getInput()->add( "sprint", { GLFW_KEY_LEFT_SHIFT, GLFW_KEY_LEFT_CONTROL } );
+	Core::getInput()->add( "sprint", { GLFW_KEY_LEFT_SHIFT } );
 }
 
 
@@ -83,4 +83,6 @@ void DebugPlayer::update( double delta, double elapsed )
 	if ( input->get( IN_BACKWARD ) ) camera->moveRelative( glm::vec3( 0.0, 0.0,  s ) );
 	if ( input->get( IN_LEFT     ) ) camera->moveRelative( glm::vec3( -s, 0.0, 0.0 ) );
 	if ( input->get( IN_RIGHT    ) ) camera->moveRelative( glm::vec3(  s, 0.0, 0.0 ) );
+	if ( input->get( IN_UP       ) ) camera->moveBy( glm::vec3( 0.0,  s, 0.0 ) );
+	if ( input->get( IN_DOWN     ) ) camera->moveBy( glm::vec3( 0.0, -s, 0.0 ) );
 }

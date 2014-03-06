@@ -80,6 +80,8 @@ Core::Core( void )
 	input->add( IN_BACKWARD, { GLFW_KEY_S, GLFW_KEY_DOWN } );
 	input->add( IN_LEFT,     { GLFW_KEY_A, GLFW_KEY_LEFT } );
 	input->add( IN_RIGHT,    { GLFW_KEY_D, GLFW_KEY_RIGHT } );
+	input->add( IN_UP,       { GLFW_KEY_SPACE } );
+	input->add( IN_DOWN,     { GLFW_KEY_LEFT_CONTROL } );
 	input->add( "pause", { GLFW_KEY_ESCAPE, GLFW_KEY_P } );
 }
 

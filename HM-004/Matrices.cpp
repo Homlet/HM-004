@@ -30,7 +30,7 @@ void Matrices::scale( glm::vec3 factor )
 
 void Matrices::rotate( glm::vec3 axis, float angle )
 {
-	model *= glm::rotate( angle, axis );
+	model *= glm::rotate( glm::radians( angle ), axis );
 }
 
 
@@ -42,7 +42,7 @@ void Matrices::lookAt( glm::vec3 position, glm::vec3 target, glm::vec3 up )
 
 void Matrices::setProjection( double fov, double ratio, double near, double far )
 {
-	projection = glm::perspective( fov, ratio, near, far );
+	projection = glm::perspective( glm::radians( fov ), ratio, near, far );
 }
 
 

@@ -32,12 +32,10 @@ private:
 	// Fonts.
 	struct FONScontext* stash;
 	int consola;
-
-	// DEBUG STUFF ---------------¬
+	
+	// Textures.
 	Texture* textureTerrain;
-	Mesh* torus;
-	// ---------------------------'
-
+	
 	// Shaders.
 	Shader* shaderEntity;
 	Shader* shaderTerrain;
@@ -53,19 +51,29 @@ private:
 
 	// Initial setup of libraries.
 	void setupOpenGL( void );
+	void setupShaders( void );
+	void setupLighting( void );
 	void setupFontStash( void );
+
+	// Debug.
+#ifdef DEBUG_MODE
+	Mesh* torus;
+
+	void setupDebug( void );
+	void runDebug( double alpha, Camera* camera );
+	void renderTorus(
+		Shader* shader,
+		Matrices* mat,
+		Matrices* shadowMat = nullptr
+	);
+#endif
 
 public:
 	Renderer( GLFWwindow* window );
 
 	void setup( void );
 	void render( double alpha, Camera* camera );
-
-	void renderTorus(
-		Shader* shader,
-		Matrices* mat,
-		Matrices* shadowMat = nullptr
-	);
+		
 	void renderEntities(
 		double alpha,
 		Shader* shader,

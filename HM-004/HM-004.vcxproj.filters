@@ -147,11 +147,11 @@
     <ClInclude Include="Player.h">
       <Filter>Header Files\State</Filter>
     </ClInclude>
-    <ClInclude Include="MacroInput.h">
-      <Filter>Header Files\Macros</Filter>
-    </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="MacroInput.h">
+      <Filter>Header Files\Macros</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -281,6 +281,9 @@
       <Filter>Resource Files\shader</Filter>
     </None>
     <None Include="texture\block_ground.xcf">
+      <Filter>Resource Files\texture</Filter>
+    </None>
+    <None Include="texture\block.tex">
       <Filter>Resource Files\texture</Filter>
     </None>
   </ItemGroup>

@@ -6,7 +6,10 @@
 
 #define DEBUG_MODE
 
+#define GLM_FORCE_RADIANS
 
+
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <iomanip>
@@ -21,7 +24,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <glm.hpp>
-#include <ext.hpp>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 #include "Core.h"

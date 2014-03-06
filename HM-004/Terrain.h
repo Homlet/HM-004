@@ -21,6 +21,7 @@ class Terrain {
 private:
 	std::map<glm::ivec3, Chunk*, ivec3_compare> chunks;
 	int csize;
+	int width, height, depth, total;
 
 	Block* blockEmpty;
 

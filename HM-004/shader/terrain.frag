@@ -9,7 +9,7 @@ in float f_fog;
 uniform vec3 u_lightDir;
 uniform vec3 u_lightColor;
 
-uniform sampler2D u_2D; // Unit 0.
+uniform sampler2DArray u_2DArray; // Unit 0.
 
 void main( void )
 {
@@ -21,10 +21,10 @@ void main( void )
 
 	o_color = vec4(
 		mix(
-			vec3( 0.616, 0.843, 0.937 ),
+			vec3( 0.529, 0.808, 0.922 ),
 			( ambient + diffuse ) *
 			u_lightColor *
-			texture( u_2D, f_tex.st ).rgb,
+			texture( u_2DArray, vec3( f_tex.st, 0 ) ).rgb,
 			f_fog
 		),
 		1.0

@@ -25,6 +25,39 @@
 
 
 /*!
+ * Creates the rendering context.
+ *
+ * @param window GLFWwindow whose context to render to. Once set, this cannot be changed.
+ */
+Renderer::Renderer( GLFWwindow* window ) :
+	window( window ),
+	entities( new std::map<int, LerpMesh*>() ),
+	 terrain( new std::map<int,     Mesh*>() ),
+	     gui( new std::map<int,     Mesh*>() ),
+	 shaderCache( new ResourceCache<Shader>()  ),
+	textureCache( new ResourceCache<Texture>() ),
+	textureTerrain( textureCache->getResource( "texture/block.tex" ) )
+{
+}
+
+
+/*!
+ * Performs setup tasks that may rely on other Core modules.
+ */
+void Renderer::setup( void )
+{
+	setupOpenGL();
+	setupShaders();
+	setupLighting();
+	setupFontStash();
+
+#ifdef DEBUG_MODE
+	setupDebug();
+#endif
+}
+
+
+/*!
  * Sets up the OpenGL state.
  */
 void Renderer::setupOpenGL( void )
@@ -54,6 +87,19 @@ void Renderer::setupOpenGL( void )
 
 
 /*!
+ * Initialises shaders and sends uniforms.
+ */
+void Renderer::setupShaders( void )
+{
+	// Create shader objects.
+//	shaderEntity  = shaderCache->getResource( "shader/entity.prog"  );
+	shaderTerrain = shaderCache->getResource( "shader/terrain.prog" );
+//	shaderGUI     = shaderCache->getResource( "shader/gui.prog"     );
+	shaderShadow  = shaderCache->getResource( "shader/shadow.prog"  );
+}
+
+
+/*!
  * Sets up the FreeType font renderer.
  */
 void Renderer::setupFontStash( void )
@@ -64,36 +110,18 @@ void Renderer::setupFontStash( void )
 
 
 /*!
- * Creates the rendering context.
- *
- * @param window GLFWwindow whose context to render to. Once set, this cannot be changed.
+ * Sets up lighting and shadow objects.
  */
-Renderer::Renderer( GLFWwindow* window ) :
-	window( window ),
-	entities( new std::map<int, LerpMesh*>() ),
-	 terrain( new std::map<int,     Mesh*>() ),
-	     gui( new std::map<int,     Mesh*>() ),
-	 shaderCache( new ResourceCache<Shader>()  ),
-	textureCache( new ResourceCache<Texture>() ),
-	textureTerrain( textureCache->getResource( "texture/block_ground.png" ) ),
-//	 shaderEntity( shaderCache->getResource( "shader/entity.prog"     ) ),
-	shaderTerrain( shaderCache->getResource( "shader/terrain.prog"    ) ),
-//	    shaderGUI( shaderCache->getResource( "shader/gui.prog"        ) ),
-	 shaderShadow( shaderCache->getResource( "shader/shadow.prog"     ) ),
-	shadowMatrices( new Matrices()  ),
-	     shadowMap( new ShadowMap() )
+void Renderer::setupLighting( void )
 {
-}
+	shadowMap = new ShadowMap();
 
-
-/*!
- * Performs setup tasks that may rely on other Core modules.
- */
-void Renderer::setup( void )
-{
-	// Setup shadow map matrices.
-	lightDir   = glm::vec3( 1.0, 0.7, 0.9 );
+	// Set directional light parameters.
+	lightDir = glm::vec3( 0.9, -1.0, 0.75 );
 	lightColor = glm::vec3( 1.0, 1.0, 0.8 );
+
+	// Set shadow map matrices.
+	shadowMatrices = new Matrices();
 	shadowMatrices->setOrtho(
 		-128, 127,
 		-128, 127,
@@ -114,21 +142,48 @@ void Renderer::setup( void )
 	// Send shadow projection matrices to shaders.
 	/* TODO:
 	if ( shaderEntity->usesShadowMatrices() )
-		shaderEntity->sendShadowProjection( shadowBias * shadowMatrices->getProjection() ); */
+	{
+		shaderEntity->sendShadowProjection( shadowBias * shadowMatrices->getProjection() );
+	} */
 
 	if ( shaderTerrain->usesShadowMatrices() )
+	{
 		shaderTerrain->sendShadowProjection( shadowBias * shadowMatrices->getProjection() );
+	}
 
 	if ( shaderShadow->usesProjection() )
+	{
 		shaderShadow->sendProjection( shadowMatrices->getProjection() );
-
-	setupOpenGL();
-	setupFontStash();
-
-	// DEBUG STUFF -----------------------------------------------------------------------¬
-	torus = Mesh::createTorus( glm::vec3( 0.0 ), glm::vec3( 10.0, 10.0, 10.0 ), 8, 1, 4 );
-	Core::getInput()->add( "display_lines", { GLFW_KEY_F } );
+	}
 }
+
+
+#ifdef DEBUG_MODE
+/*!
+ * Sets up debugging stuff that can be ignored in release.
+ */
+void Renderer::setupDebug( void )
+{
+	torus = Mesh::createTorus( glm::vec3( 0.0 ), glm::vec3( 10.0, 10.0, 10.0 ), 8, 1, 4 );
+	Core::getInput()->add( "display_lines", { GLFW_KEY_F1 } );
+}
+
+
+/*!
+ * Performs per-frame debugging tasks.
+ */
+void Renderer::runDebug( double alpha, Camera* camera )
+{
+	// Switchable display modes.
+	if ( Core::getInput()->pressed( "display_lines" ) )
+	{
+		glPolygonMode( GL_FRONT, GL_LINE );
+	} else if ( Core::getInput()->released( "display_lines" ) )
+	{
+		glPolygonMode( GL_FRONT, GL_FILL );
+	}
+}
+#endif
 
 
 /*!
@@ -136,39 +191,41 @@ void Renderer::setup( void )
  */
 void Renderer::render( double alpha, Camera* camera )
 {
-	// Switchable display modes.
-	if ( Core::getInput()->pressed( "display_lines" ) )
-		glPolygonMode( GL_FRONT, GL_LINE );
-	else if ( Core::getInput()->released( "display_lines" ) )
-		glPolygonMode( GL_FRONT, GL_FILL );
+#ifdef DEBUG_MODE
+	runDebug( alpha, camera );
+#endif
 	
 	glClearColor( 0.529f, 0.808f, 0.922f, 1.0f );
 
 	// Send projection matrices.
 	if ( shaderTerrain->usesProjection() )
+	{
 		shaderTerrain->sendProjection( camera->getMatrices()->getProjection() );
-	/* TODO: if ( shaderEntity->usesProjection() )
-		shaderTerrain->sendProjection( camera->getMatrices()->getProjection() ); */
+	}
+//	if ( shaderEntity->usesProjection() )
+//	{
+//		shaderTerrain->sendProjection( camera->getMatrices()->getProjection() );
+//	}
 	
 	// Render shadow map as a normal scene.
-	shadowMatrices->lookAt(
-		glm::vec3( 0.0 ),
-		lightDir,
-		glm::vec3( 0.0, 1.0, 0.0 )
-	);
-
-	shadowMap->bind();
-
-	glClear( GL_DEPTH_BUFFER_BIT );
-	glDisable( GL_CULL_FACE );
+//	shadowMatrices->lookAt(
+//		glm::vec3( 0.0 ),
+//		lightDir,
+//		glm::vec3( 0.0, 1.0, 0.0 )
+//	);
+//
+//	shadowMap->bind();
+//
+//	glClear( GL_DEPTH_BUFFER_BIT );
+//	glDisable( GL_CULL_FACE );
 	
-	renderTerrain(         shaderShadow, shadowMatrices );
-	renderEntities( alpha, shaderShadow, shadowMatrices );
+//	renderTerrain(         shaderShadow, shadowMatrices );
+//	renderEntities( alpha, shaderShadow, shadowMatrices );
 
-	FBO::unbind();
+//	FBO::unbind();
 	
 	// Render final scene using the shadow matrices to cast shadows.
-	shadowMap->bindTexture();
+//	shadowMap->bindTexture();
 
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	glEnable( GL_CULL_FACE );
@@ -178,10 +235,11 @@ void Renderer::render( double alpha, Camera* camera )
 	renderEntities( alpha, shaderEntity,  camera->getMatrices(), shadowMatrices );
 	renderGUI(             shaderGUI,     camera->getMatrices() );
 
-	FBO::unbindTexture();
+//	FBO::unbindTexture();
 }
 
 
+#ifdef DEBUG_MODE
 /*!
  * Draw a torus to the back buffer, for debugging purposes.
  */
@@ -223,6 +281,7 @@ void Renderer::renderTorus( Shader* shader, Matrices* mat, Matrices* shadowMat )
 
 	Shader::unbind();
 }
+#endif
 
 
 /*!

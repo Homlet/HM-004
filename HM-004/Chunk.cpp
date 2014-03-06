@@ -26,7 +26,7 @@ Chunk::Chunk( glm::ivec3 position, int size, Terrain* terrain ) :
 				int y = j + position.y * size;
 				int z = k + position.z * size;
 
-				if ( y < 48 + ( glm::simplex( glm::vec2( x / 100.0, z / 100.0 ) ) + 1 ) * 16 )
+				if ( y < 64 + ( glm::simplex( glm::vec2( x / 100.0, z / 100.0 ) ) + 1 ) * 16 )
 					blocks[i][j][k].type = 1;
 				else
 					blocks[i][j][k].type = 0;
@@ -39,9 +39,15 @@ Chunk::Chunk( glm::ivec3 position, int size, Terrain* terrain ) :
 /*!
  * Returns the block type at this position in the chunk.
  */
-Block Chunk::getBlockAt( glm::ivec3 pos )
+Block& Chunk::getBlockAt( glm::ivec3 pos )
 {
 	return blocks[pos.x][pos.y][pos.z];
+}
+
+
+Block& Chunk::getBlockAt( int x, int y, int z )
+{
+	return blocks[x][y][z];
 }
 
 

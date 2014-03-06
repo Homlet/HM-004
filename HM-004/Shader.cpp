@@ -29,9 +29,11 @@ GLuint Shader::compileShader( std::string src, GLenum type )
 	glGetShaderiv( id, GL_COMPILE_STATUS, &result );
 	glGetShaderiv( id, GL_INFO_LOG_LENGTH, &length );
 	std::vector<char> log( length );
-	glGetShaderInfoLog( id, length, 0, &log[0] );
-
-	std::cout << "    " << &log[0] << "\n";
+	if ( length > 0 )
+	{
+		glGetShaderInfoLog( id, length, 0, &log[0] );
+		std::cout << "    " << &log[0] << "\n";
+	}
 
 	return ( result == GL_FALSE ) ? 0 : id;
 }
@@ -79,8 +81,11 @@ Shader::Shader( std::string name, std::string vert_src, std::string frag_src ) :
 	glGetProgramiv( ID, GL_LINK_STATUS, &result );
 	glGetProgramiv( ID, GL_INFO_LOG_LENGTH, &length );
 	std::vector<char> log( length );
-	glGetProgramInfoLog( ID, length, 0, &log[0] );
-	std::cout << "  " << &log[0];
+	if ( length > 0 )
+	{
+		glGetProgramInfoLog( ID, length, 0, &log[0] );
+		std::cout << "  " << &log[0];
+	}
 	
 	// Dispose of shaders.
 	glDeleteShader( vert );
@@ -99,10 +104,14 @@ Shader::Shader( std::string name, std::string vert_src, std::string frag_src ) :
 		uniformLoc_sP         = glGetUniformLocation( ID, "u_sP"         );
 		
 		GLuint sampler_2D       = glGetUniformLocation( ID, "u_2D"       );
+		GLuint sampler_2DArray  = glGetUniformLocation( ID, "u_2DArray"  );
 		GLuint sampler_2DShadow = glGetUniformLocation( ID, "u_2DShadow" );
 
 		if ( sampler_2D != -1 )
 			glUniform1i( sampler_2D, 0 );
+		else if ( sampler_2DArray != -1 )
+			glUniform1i( sampler_2DArray, 0 );
+
 		if ( sampler_2DShadow != -1 )
 			glUniform1i( sampler_2DShadow, 1 );
 	}

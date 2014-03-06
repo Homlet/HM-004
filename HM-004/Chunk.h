@@ -28,7 +28,8 @@ private:
 public:
 	Chunk( glm::ivec3 position, int size, Terrain* terrain );
 	
-	Block  getBlockAt( glm::ivec3 pos );
+	Block& getBlockAt( glm::ivec3 pos );
+	Block& getBlockAt( int x, int y, int z );
 
 	int   getID( void );
 	Mesh* getMesh( void );
