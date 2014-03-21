@@ -27,9 +27,12 @@ Chunk::Chunk( glm::ivec3 position, int size, Terrain* terrain ) :
 				int z = k + position.z * size;
 
 				if ( y < 64 + ( glm::simplex( glm::vec2( x / 100.0, z / 100.0 ) ) + 1 ) * 16 )
-					blocks[i][j][k].type = 1;
-				else
+				{
+					blocks[i][j][k].type = y % 2 + 1;
+				} else
+				{
 					blocks[i][j][k].type = 0;
+				}
 			}
 		}
 	}
@@ -155,7 +158,7 @@ Mesh* Chunk::generateMesh( void )
 							glm::vec3( positionAbs ) + glm::vec3( p[0]+wd[0]+hd[0], p[1]+wd[1]+hd[1], p[2]+wd[2]+hd[2] ),
 							glm::vec3( positionAbs ) + glm::vec3( p[0]      +hd[0], p[1]      +hd[1], p[2]      +hd[2] ),
 							glm::vec3( f ? q : -q ),
-							(float) w, (float) h
+							(float) w, (float) h, t - 1
 						),
 						&vertices,
 						&indices

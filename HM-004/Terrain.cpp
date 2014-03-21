@@ -40,8 +40,8 @@ Terrain::Terrain( void ) :
 							int jy = ( csize * j + y );
 							int kz = ( csize * k + z );
 
-							if ( b.type > 0 )
-								b.type -= glm::simplex( glm::vec3( ix / 30.0, jy / 30.0, kz / 30.0 ) ) - jy / 96.0 > 0;
+							if ( glm::simplex( glm::vec3( ix / 30.0, jy / 30.0, kz / 30.0 ) ) - jy / 96.0 > 0 )
+								b.type = 0;
 						}
 
 				// Stop the window from becoming unresponsive.

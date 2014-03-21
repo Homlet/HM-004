@@ -26,7 +26,8 @@ struct quad {
 		glm::vec3 p3,
 		glm::vec3 n,
 		float w,
-		float h
+		float h,
+		int t
 	) :
 		p0( p0 ),
 		p1( p1 ),
@@ -34,11 +35,13 @@ struct quad {
 		p3( p3 ),
 		n( n ),
 		w( w ),
-		h( h )
+		h( h ),
+		t( t )
 	{};
 
 	glm::vec3 p0, p1, p2, p3, n;
 	float w, h;
+	int t;
 };
 
 
