@@ -9,10 +9,23 @@
 /*!
  * Creates an empty OpenGL texture object.
  */
-Texture::Texture( std::string name ) :
-	name( name )
+Texture::Texture( std::string name, GLenum type ) :
+	name( name ), type( type )
 {
 	glGenTextures( 1, &ID );
+
+	bind();
+
+	glTexParameteri( type, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	glTexParameteri( type, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR );
+	glTexParameteri( type, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( type, GL_TEXTURE_WRAP_T, GL_REPEAT );
+
+	float anisotropy;
+	glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &anisotropy );
+	glTexParameterf( type, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy );
+
+	unbind();
 }
 
 
@@ -20,7 +33,7 @@ Texture::Texture( std::string name ) :
  * Creates a 2D texture object and fills it with data from a targa file.
  */
 Texture_2D::Texture_2D( std::string name, std::string url ) :
-	Texture( name )
+	Texture( name, GL_TEXTURE_2D )
 {
 	int width, height, depth;
 	GLenum format;
@@ -29,7 +42,8 @@ Texture_2D::Texture_2D( std::string name, std::string url ) :
 	data = flipY( data, width, height, depth );
 	format = ( depth == 3 ) ? GL_RGB : GL_RGBA;
 
-	bufferData( data, glm::ivec2( width, height ), GL_RGBA8, format );
+	glTexImage2D( type, 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, &data[0] );
+	glGenerateMipmap( type );
 
 	stbi_image_free( data );
 }
@@ -39,7 +53,7 @@ Texture_2D::Texture_2D( std::string name, std::string url ) :
  * Create a 2D array texture object and fills it with data from targa files.
  */
 Texture_2D_Array::Texture_2D_Array( std::string name, std::vector<std::string> urls ) :
-	Texture( name )
+	Texture( name, GL_TEXTURE_2D_ARRAY )
 {
 	int width, height, depth;
 	GLenum format;
@@ -48,78 +62,29 @@ Texture_2D_Array::Texture_2D_Array( std::string name, std::vector<std::string> u
 	data = flipY( data, width, height, depth );
 	format = ( depth == 3 ) ? GL_RGB : GL_RGBA;
 
-	bufferData( data, glm::ivec2( width, height ), 0, GL_RGBA8, format );
-
-	stbi_image_free( data );
+	bind();
+	glTexImage3D( type, 0, GL_RGBA8, width, height, (GLsizei) urls.size(), 0, format, GL_UNSIGNED_BYTE, 0 );
+	glTexSubImage3D(
+		type, 0, 0, 0, 0,
+		width, height, 1,
+		format, GL_UNSIGNED_BYTE, &data[0]
+	);
 
 	for ( size_t i = 1; i < urls.size(); i++ )
 	{
-		data = stbi_load( urls[i].c_str(), 0, 0, 0, 0 );
+		data = stbi_load( urls[i].c_str(), &width, &height, &depth, 0 );
 		data = flipY( data, width, height, depth );
 
-		bufferData( data, glm::ivec2( width, height ), (int) i, GL_RGBA8, format );
-
-		stbi_image_free( data );
+		glTexSubImage3D(
+			type, 0,
+			0, 0, (int) i,
+			width, height, 1,
+			format, GL_UNSIGNED_BYTE, &data[0]
+		);
 	}
-}
-
-
-/*!
- * Buffers image data to the 2D texture object.
- */
-void Texture_2D::bufferData( unsigned char* data, glm::ivec2 dimensions, GLenum format_inner, GLenum format_outer )
-{
-	int width = dimensions.x;
-	int height = dimensions.y;
-
-	GLenum type = getType();
-	bind();
-	{
-		glTexParameteri( type, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		glTexParameteri( type, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR );
-		glTexParameteri( type, GL_TEXTURE_WRAP_S, GL_REPEAT );
-		glTexParameteri( type, GL_TEXTURE_WRAP_T, GL_REPEAT );
-
-		float anisotropy;
-		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &anisotropy );
-		glTexParameterf( type, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy );
-
-		glTexImage2D( type, 0, format_inner, width, height, 0, format_outer, GL_UNSIGNED_BYTE, &data[0] );
-		glGenerateMipmap( type );
-	}
-	unbind();
-}
-
-
-/*!
- * Buffers a single image to the 2D array texture object.
- */
-void Texture_2D_Array::bufferData(
-	unsigned char* data,
-	glm::ivec2 dimensions,
-	int level,
-	GLenum format_inner,
-	GLenum format_outer
-)
-{
-	int width = dimensions.x;
-	int height = dimensions.y;
-
-	GLenum type = getType();
-	bind();
-	{
-		glTexParameteri( type, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		glTexParameteri( type, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR );
-		glTexParameteri( type, GL_TEXTURE_WRAP_S, GL_REPEAT );
-		glTexParameteri( type, GL_TEXTURE_WRAP_T, GL_REPEAT );
-
-		float anisotropy;
-		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &anisotropy );
-		glTexParameterf( type, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy );
-
-		glTexImage2D( type, 0, format_inner, width, height, 0, format_outer, GL_UNSIGNED_BYTE, &data[0] );
-		glGenerateMipmap( type );
-	}
+	
+	stbi_image_free( data );
+	glGenerateMipmap( type );
 	unbind();
 }
 
@@ -159,7 +124,7 @@ void Texture::bind( void )
 	unbind();
 
 	glActiveTexture( GL_TEXTURE0 );
-	glBindTexture( getType(), ID );
+	glBindTexture( type, ID );
 }
 
 

@@ -24,7 +24,7 @@ void main( void )
 			vec3( 0.529, 0.808, 0.922 ),
 			( ambient + diffuse ) *
 			u_lightColor *
-			texture( u_2DArray, vec3( f_tex.st, 0 ) ).rgb,
+			texture( u_2DArray, vec3( f_tex.st, 1 ) ).rgb,
 			f_fog
 		),
 		1.0
