@@ -415,7 +415,7 @@ void Renderer::addEntity( Entity* entity )
  */
 void Renderer::addTerrain( Chunk* chunk )
 {
-	this->terrain->insert(
+	terrain->insert(
 		std::pair<int, Mesh*>(
 			chunk->getID(),
 			chunk->getMesh()
@@ -427,12 +427,12 @@ void Renderer::addTerrain( Chunk* chunk )
 /*!
  * Add a GUI element to be rendered infront of 3d geometry.
  */
-void Renderer::addGUI( GUIElement* gui )
+void Renderer::addGUI( GUIElement* guiElement )
 {
-	this->gui->insert(
+	gui->insert(
 		std::pair<int, Mesh*>(
-			gui->getID(),
-			gui->getMesh()
+			guiElement->getID(),
+			guiElement->getMesh()
 		)
 	);
 }

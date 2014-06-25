@@ -26,12 +26,13 @@ Chunk::Chunk( glm::ivec3 position, int size, Terrain* terrain ) :
 				int y = j + position.y * size;
 				int z = k + position.z * size;
 
-				if ( y < 64 + ( glm::simplex( glm::vec2( x / 100.0, z / 100.0 ) ) + 1 ) * 16 )
+				float slope = 48 - sqrtf( powf( 1 - x / 144.0f, 4 ) + powf( 1 - z / 144.0f, 4 ) ) * 80;
+				if ( y < slope + ( glm::simplex( glm::vec2( x / 100.0, z / 100.0 ) ) + 1 ) * 16 )
 				{
-					blocks[i][j][k].type = y % 2 + 1;
+					blocks[i][j][k].id = 3;
 				} else
 				{
-					blocks[i][j][k].type = 0;
+					blocks[i][j][k].id = 0;
 				}
 			}
 		}
@@ -66,7 +67,7 @@ int Chunk::getID( void )
 /*!
  * Returns a pointer to the mesh for this chunk.
  */
-Mesh* Chunk::getMesh( void )
+Mesh* Chunk::getMesh()
 {
 	if ( changed )
 	{
@@ -81,7 +82,7 @@ Mesh* Chunk::getMesh( void )
 /*!
  * Generates a mesh for the chunk using a greedy alogrithm.
  */
-Mesh* Chunk::generateMesh( void )
+Mesh* Chunk::generateMesh()
 {
 	std::vector<vertex> vertices;
 	std::vector<GLuint> indices;
@@ -110,13 +111,13 @@ Mesh* Chunk::generateMesh( void )
 			{
 				char near = (
 					p[d] == 0 ?
-					terrain->getBlockAt( p - q + positionAbs ).type :
-					blocks[p[0]-q[0]][p[1]-q[1]][p[2]-q[2]].type
+					terrain->getBlockAt( p - q + positionAbs ).id :
+					blocks[p[0]-q[0]][p[1]-q[1]][p[2]-q[2]].id
 				);
 				char far = (
 					p[d] == size ?
-					terrain->getBlockAt( p + positionAbs ).type :
-					blocks[p[0]][p[1]][p[2]].type
+					terrain->getBlockAt( p + positionAbs ).id :
+					blocks[p[0]][p[1]][p[2]].id
 				);
 				type[p[u]][p[v]] = ( near != 0 ) ^ ( far != 0 ) ? near | far : 0;
 				face[p[u]][p[v]] = ( near != 0 );
@@ -126,8 +127,8 @@ Mesh* Chunk::generateMesh( void )
 			for ( int j = 0; j < size; j++ )
 			for ( int i = 0; i < size; )
 			{
-				char t;
-				if ( t = type[i][j] )
+				char t = type[i][j];
+				if ( t > 0 )
 				{
 					// Whether the quad faces backwards along the axis.
 					bool f = face[i][j];
@@ -151,6 +152,8 @@ Mesh* Chunk::generateMesh( void )
 					p[v] = j;
 					glm::vec3 wd; wd[u] = (float) ( f ? w : -w );
 					glm::vec3 hd; hd[v] = (float) ( h );
+					int texture = terrain->getBlockTypeFromId(t).textures[d + (int) f];
+					std::cout << texture << std::endl;
 					Mesh::appendQuad(
 						quad(
 							glm::vec3( positionAbs ) + glm::vec3( p ),
@@ -158,7 +161,7 @@ Mesh* Chunk::generateMesh( void )
 							glm::vec3( positionAbs ) + glm::vec3( p[0]+wd[0]+hd[0], p[1]+wd[1]+hd[1], p[2]+wd[2]+hd[2] ),
 							glm::vec3( positionAbs ) + glm::vec3( p[0]      +hd[0], p[1]      +hd[1], p[2]      +hd[2] ),
 							glm::vec3( f ? q : -q ),
-							(float) w, (float) h, t - 1
+							(float) w, (float) h, texture
 						),
 						&vertices,
 						&indices

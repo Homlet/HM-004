@@ -7,63 +7,73 @@
 
 Terrain::Terrain( void ) :
 	csize( 16 ),
-	width( 12 ),
+	width( 18 ),
 	height( 8 ),
-	depth( 12 ),
+	depth( 18 ),
 	total( width * height * depth ),
+	blockTypes( new BlockType[256] ),
 	blockEmpty( new Block() )
 {
-	blockEmpty->type = 0;
+	for ( int i = 0; i < 5; i++ )
+		blockTypes[1].textures[i] = i + 1;
 
+	blockEmpty->id = 0;
+
+	generateIsland();
+}
+
+
+void Terrain::generateIsland( void )
+{
 	int count = 0;
 	for ( int i = 0; i < width; i++ )
-		for ( int j = 0; j < height; j++ )
-			for ( int k = 0; k < depth; k++ )
-			{
-				chunks[glm::ivec3( i, j, k )] = new Chunk( glm::ivec3( i, j, k ), csize, this );
+	for ( int j = 0; j < height; j++ )
+	for ( int k = 0; k < depth; k++ )
+	{
+		chunks[glm::ivec3( i, j, k )] = new Chunk( glm::ivec3( i, j, k ), csize, this );
 
-				// Stop the window from becoming unresponsive.
-				Core::cheapProgress( "Generating hills...", (float) count++ / total );
-			}
+		// Stop the window from becoming unresponsive.
+		Core::cheapProgress( "Generating hills...", (float) count++ / total );
+	}
 
 	count = 0;
 	for ( int i = 0; i < width; i++ )
-		for ( int j = 0; j < height; j++ )
-			for ( int k = 0; k < depth; k++ )
-			{
-				for ( int x = 0; x < csize; x++ )
-					for ( int y = 0; y < csize; y++ )
-						for ( int z = 0; z < csize; z++ )
-						{
-							Block& b = chunks[glm::ivec3( i, j, k )]->getBlockAt( x, y, z );
-							int ix = ( csize * i + x );
-							int jy = ( csize * j + y );
-							int kz = ( csize * k + z );
+	for ( int j = 0; j < height; j++ )
+	for ( int k = 0; k < depth; k++ )
+	{
+		for ( int x = 0; x < csize; x++ )
+		for ( int y = 0; y < csize; y++ )
+		for ( int z = 0; z < csize; z++ )
+		{
+			Block& b = chunks[glm::ivec3( i, j, k )]->getBlockAt( x, y, z );
+			int ix = ( csize * i + x );
+			int jy = ( csize * j + y );
+			int kz = ( csize * k + z );
 
-							if ( glm::simplex( glm::vec3( ix / 30.0, jy / 30.0, kz / 30.0 ) ) - jy / 96.0 > 0 )
-								b.type = 0;
-						}
+			if ( glm::simplex( glm::vec3( ix / 30.0, jy / 30.0, kz / 30.0 ) ) - jy / 96.0 > 0 )
+				b.id = 0;
+		}
 
-				// Stop the window from becoming unresponsive.
-				Core::cheapProgress( "Generating caves...", (float) count++ / total );
-			}
+		// Stop the window from becoming unresponsive.
+		Core::cheapProgress( "Generating caves...", (float) count++ / total );
+	}
 
 	for ( int i = 0; i < width; i++ )
-		for ( int k = 0; k < depth; k++ )
+	for ( int k = 0; k < depth; k++ )
+	{
+		for ( int x = 0; x < csize; x++ )
+		for ( int z = 0; z < csize; z++ )
 		{
-			for ( int x = 0; x < csize; x++ )
-				for ( int z = 0; z < csize; z++ )
-				{
-					int ix = ( csize * i + x );
-					int kz = ( csize * k + z );
-					int height = (int) ( ( glm::simplex( glm::vec2( ix / 90.0, kz / 90.0 ) ) + 1 ) * 4 + 1 );
-					for ( int y = 0; y < height; y++ )
-						chunks[glm::ivec3( i, 0, k )]->getBlockAt( x, y, z ).type = 1;
-				}
-			
-			// Stop the window from becoming unresponsive.
-			Core::cheapProgress( "Sealing in the goodness...", (float) count++ / ( width * depth ) );
+			int ix = ( csize * i + x );
+			int kz = ( csize * k + z );
+			int height = (int) ( ( glm::simplex( glm::vec2( ix / 90.0, kz / 90.0 ) ) + 1 ) * 4 + 1 );
+			for ( int y = 0; y < height; y++ )
+				chunks[glm::ivec3( i, 0, k )]->getBlockAt( x, y, z ).id = 1;
 		}
+			
+		// Stop the window from becoming unresponsive.
+		Core::cheapProgress( "Sealing in the goodness...", (float) count++ / ( width * depth ) );
+	}
 }
 
 
@@ -103,7 +113,7 @@ Chunk* Terrain::getChunkAt( glm::ivec3 pos )
 
 
 /*!
- * Returns the block type at this position in the terrain.
+ * Returns the block id at this position in the terrain.
  */
 Block Terrain::getBlockAt( glm::ivec3 pos )
 {
@@ -112,4 +122,13 @@ Block Terrain::getBlockAt( glm::ivec3 pos )
 		return chunks[cpos]->getBlockAt( pos % csize );
 	else
 		return *blockEmpty;
+}
+
+
+/*!
+ * Returns the block type definition object for a given block id.
+ */
+const BlockType Terrain::getBlockTypeFromId( char id )
+{
+	return blockTypes[id];
 }

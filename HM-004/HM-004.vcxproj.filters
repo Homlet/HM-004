@@ -1,82 +1,106 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Header Files\Macros">
-      <UniqueIdentifier>{12668af4-016f-47db-81af-ae2104fbd3f5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\State">
-      <UniqueIdentifier>{8e1ef868-bdc5-4e70-ae9a-af926f8f7328}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Render">
-      <UniqueIdentifier>{a3bf3b7d-222b-4e43-988f-ab4a072d5208}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\State\GUI">
-      <UniqueIdentifier>{fbd28412-a8d8-474c-a113-8a78f978ebf0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Render">
-      <UniqueIdentifier>{3714676b-60ea-47cf-8d26-154681b502b5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="pugixml">
-      <UniqueIdentifier>{93ddebea-8c51-495a-80aa-169e2ad8561a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\shader">
-      <UniqueIdentifier>{1da7f7d6-056b-483a-8cfe-b868a845b6d5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\texture">
-      <UniqueIdentifier>{8ba7b239-ba59-4dd5-82c4-d28f7ae31b51}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\State">
-      <UniqueIdentifier>{e08de1f6-febd-40f5-95b9-5831bd26267f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\State\Terrain">
-      <UniqueIdentifier>{f8f84ac9-eab3-4187-950e-8c2cd03b6d2e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\State\Terrain">
-      <UniqueIdentifier>{13fa9b1e-69aa-4bcd-9520-d17aa7cf1609}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\State\Entity">
-      <UniqueIdentifier>{684316e3-0887-4d2e-a87c-6cd33c25546f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\State\Entity">
-      <UniqueIdentifier>{2e746716-5037-4421-854e-be149b0d9717}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\State\GUI">
-      <UniqueIdentifier>{06b6509c-d37b-4a34-9f98-68d535847ba9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\font">
-      <UniqueIdentifier>{c549eab2-ecf5-4200-91c3-6075e4f442ea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="fontstash">
-      <UniqueIdentifier>{3a7a1615-0c7b-4ce4-b4f1-f24e9c68b911}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="Core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="File.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="FBO.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrices.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="VAO.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="State.cpp">
+      <Filter>Source Files\Update</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Source Files\Update\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="Chunk.cpp">
+      <Filter>Source Files\Update\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source Files\Update\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\Update\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIElement.cpp">
+      <Filter>Source Files\Render\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="pugixml\pugixml.cpp">
+      <Filter>pugixml</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_image.c">
+      <Filter>stb</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Base.h">
+    <ClInclude Include="ResourceCache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MacroWindow.h">
+    <ClInclude Include="Core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="File.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MacroInput.h">
       <Filter>Header Files\Macros</Filter>
     </ClInclude>
     <ClInclude Include="MacroTime.h">
       <Filter>Header Files\Macros</Filter>
     </ClInclude>
-    <ClInclude Include="State.h">
-      <Filter>Header Files\State</Filter>
+    <ClInclude Include="MacroWindow.h">
+      <Filter>Header Files\Macros</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="FBO.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrices.h">
+      <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Header Files\Render</Filter>
@@ -84,23 +108,32 @@
     <ClInclude Include="Renderer.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="GUIElement.h">
-      <Filter>Header Files\State\GUI</Filter>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="VAO.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceCache.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
+    <ClInclude Include="Texture.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Matrices.h">
-      <Filter>Header Files\Render</Filter>
+    <ClInclude Include="GUIElement.h">
+      <Filter>Header Files\Render\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="State.h">
+      <Filter>Header Files\Update</Filter>
+    </ClInclude>
+    <ClInclude Include="Chunk.h">
+      <Filter>Header Files\Update\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Header Files\Update\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header Files\Update\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Update\Entity</Filter>
     </ClInclude>
     <ClInclude Include="pugixml\pugiconfig.hpp">
       <Filter>pugixml</Filter>
@@ -108,202 +141,169 @@
     <ClInclude Include="pugixml\pugixml.hpp">
       <Filter>pugixml</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Terrain.h">
-      <Filter>Header Files\State\Terrain</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Header Files\State\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="Chunk.h">
-      <Filter>Header Files\State\Terrain</Filter>
-    </ClInclude>
-    <ClInclude Include="FBO.h">
-      <Filter>Header Files\Render</Filter>
+    <ClInclude Include="stb_image.h">
+      <Filter>stb</Filter>
     </ClInclude>
     <ClInclude Include="font\stb_truetype.h">
+      <Filter>stb</Filter>
+    </ClInclude>
+    <ClInclude Include="font\fontstash.h">
       <Filter>fontstash</Filter>
     </ClInclude>
     <ClInclude Include="font\glfontstash.h">
       <Filter>fontstash</Filter>
     </ClInclude>
-    <ClInclude Include="font\fontstash.h">
-      <Filter>fontstash</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="File.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Input.h">
-      <Filter>Header Files\State</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files\State</Filter>
-    </ClInclude>
-    <ClInclude Include="stb_image.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="MacroInput.h">
-      <Filter>Header Files\Macros</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="VAO.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Matrices.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="pugixml\pugixml.cpp">
-      <Filter>pugixml</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Terrain.cpp">
-      <Filter>Source Files\State\Terrain</Filter>
-    </ClCompile>
-    <ClCompile Include="Chunk.cpp">
-      <Filter>Source Files\State\Terrain</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Source Files\State\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="GUIElement.cpp">
-      <Filter>Source Files\State\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="FBO.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Core.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="File.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="State.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="stb_image.c">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shader\basic.frag">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\basic.prog">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\basic.vert">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="texture\block_grass_side.xcf">
-      <Filter>Resource Files\texture</Filter>
-    </None>
-    <None Include="texture\block_grass_top.xcf">
-      <Filter>Resource Files\texture</Filter>
-    </None>
-    <None Include="texture\block_rock.xcf">
-      <Filter>Resource Files\texture</Filter>
-    </None>
-    <None Include="texture\block_sand.xcf">
-      <Filter>Resource Files\texture</Filter>
-    </None>
-    <None Include="shader\textured.prog">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\textured.frag">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\test_phong.prog">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="texture\test.xcf">
-      <Filter>Resource Files\texture</Filter>
-    </None>
-    <None Include="shader\test_phong.frag">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\test_phong.vert">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\terrain.prog">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\phong.frag">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\phong.vert">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\shadow.frag">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\shadow.prog">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\shadow.vert">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\terrain.frag">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="shader\terrain.vert">
-      <Filter>Resource Files\shader</Filter>
-    </None>
-    <None Include="texture\block_ground.xcf">
-      <Filter>Resource Files\texture</Filter>
-    </None>
-    <None Include="texture\block.tex">
-      <Filter>Resource Files\texture</Filter>
-    </None>
+    <Image Include="texture\block_grass_top.png">
+      <Filter>Resources\Textures</Filter>
+    </Image>
+    <Image Include="texture\block_ground.png">
+      <Filter>Resources\Textures</Filter>
+    </Image>
+    <Image Include="texture\test.png">
+      <Filter>Resources\Textures</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Font Include="font\ConsolaMono-Bold.ttf">
-      <Filter>Resource Files\font</Filter>
+      <Filter>Resources\Fonts</Filter>
     </Font>
     <Font Include="font\ConsolaMono.ttf">
-      <Filter>Resource Files\font</Filter>
+      <Filter>Resources\Fonts</Filter>
     </Font>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="texture\test.png">
-      <Filter>Resource Files\texture</Filter>
-    </Image>
-    <Image Include="texture\block_grass_top.png">
-      <Filter>Resource Files\texture</Filter>
-    </Image>
-    <Image Include="texture\block_ground.png">
-      <Filter>Resource Files\texture</Filter>
-    </Image>
+    <None Include="texture\block.tex">
+      <Filter>Resources\Textures</Filter>
+    </None>
+    <None Include="texture\block_grass_side.xcf">
+      <Filter>Resources\Textures</Filter>
+    </None>
+    <None Include="texture\block_grass_top.xcf">
+      <Filter>Resources\Textures</Filter>
+    </None>
+    <None Include="texture\block_ground.xcf">
+      <Filter>Resources\Textures</Filter>
+    </None>
+    <None Include="texture\block_rock.xcf">
+      <Filter>Resources\Textures</Filter>
+    </None>
+    <None Include="texture\block_sand.xcf">
+      <Filter>Resources\Textures</Filter>
+    </None>
+    <None Include="texture\test.xcf">
+      <Filter>Resources\Textures</Filter>
+    </None>
+    <None Include="shader\phong.frag">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\phong.vert">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\shadow.frag">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\shadow.prog">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\shadow.vert">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\terrain.frag">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\terrain.prog">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\terrain.vert">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\test_phong.frag">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\test_phong.prog">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\test_phong.vert">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\textured.frag">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\textured.prog">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\basic.vert">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\basic.prog">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="shader\basic.frag">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{9253170b-9e96-42b9-94a1-db15de8f6ce8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{63613740-52d5-4f0f-bb9e-6a961b5382e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{faa431b1-346a-4383-bac5-46db3efff241}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Shaders">
+      <UniqueIdentifier>{363ddc1f-a12c-491d-9b93-e299a1191054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Fonts">
+      <UniqueIdentifier>{e9a3f835-944b-4fd3-b2e4-725b56df2733}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Textures">
+      <UniqueIdentifier>{3edbd598-a86e-40cb-ac5f-9499df53be8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Update">
+      <UniqueIdentifier>{5ba616e2-61c3-4c2d-ac55-a5c922b0b79d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render">
+      <UniqueIdentifier>{f31cb8fb-7e40-407a-a7ed-2e364c7137ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Update\Terrain">
+      <UniqueIdentifier>{6d0b0b3b-d983-473f-b108-350caf3608bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Update\Entity">
+      <UniqueIdentifier>{dc596125-1f8e-4a00-a0f6-8aec7acfe01d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\GUI">
+      <UniqueIdentifier>{c667858f-f1da-4cd0-8d07-b6b2d5ebe3a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Macros">
+      <UniqueIdentifier>{47bbe195-2488-4e48-9ef1-910e1df9c850}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Render">
+      <UniqueIdentifier>{58da467b-a030-4e77-ae9f-8d4e3dd73067}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Render\GUI">
+      <UniqueIdentifier>{105c8522-447f-4810-8c49-e392bb5e91e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Update">
+      <UniqueIdentifier>{f5c040fc-5f61-434c-94bc-e20071bb69da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Update\Terrain">
+      <UniqueIdentifier>{a7bec464-87e1-411a-b16d-52a92b4e18b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Update\Entity">
+      <UniqueIdentifier>{14211bec-eabd-4776-b206-03e63972c840}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pugixml">
+      <UniqueIdentifier>{3d684389-6afb-42fb-ac26-a1dbd05044ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="stb">
+      <UniqueIdentifier>{4736317d-f4cc-4eb9-8c8e-eb38f7d58c0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fontstash">
+      <UniqueIdentifier>{3b6827e7-626c-4f4b-990d-f7b78df039b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

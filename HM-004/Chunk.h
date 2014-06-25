@@ -1,12 +1,14 @@
 #pragma once
 
 
+struct BlockType;
+
 class Mesh;
 class Terrain;
 
 
 struct Block {
-	char type;
+	char id;
 };
 
 
@@ -17,7 +19,7 @@ private:
 	Terrain* terrain;
 
 	Mesh* mesh;
-	Mesh* generateMesh( void );
+	Mesh* generateMesh();
 	bool changed;
 
 	glm::ivec3 position;
@@ -32,5 +34,5 @@ public:
 	Block& getBlockAt( int x, int y, int z );
 
 	int   getID( void );
-	Mesh* getMesh( void );
+	Mesh* getMesh();
 };

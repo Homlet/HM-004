@@ -22,7 +22,7 @@ public:
 
 class DebugPlayer : public Player {
 private:
-	double speed{ 10 };
+	double speed{ 4.3 };
 
 	double mx{ 0 }, my{ 0 };
 
